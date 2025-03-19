@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Weather Wizard</string>
+    <string name="favourite">Favourite</string>
+    <string name="home">Home</string>
+    <string name="alert">Alert</string>
+    <string name="setting">Setting</string>
+    <string name="humidity">"Humidity : "</string>
+    <string name="wind_speed">"Wind Speed : "</string>
+    <string name="km_hr">"%1$s km/hr "</string>
+    <string name="today">Today</string>
+</resources>
