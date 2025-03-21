@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">طقس الساحر</string>
+    <string name="favourite">المفضلة</string>
+    <string name="home">الرئيسية</string>
+    <string name="alert">تنبيه</string>
+    <string name="setting">الإعدادات</string>
+    <string name="humidity">" :الرطوبة"</string>
+    <string name="wind_speed">" :سرعة الرياح"</string>
+    <string name="km_hr">"%1$s كم/ساعة"</string>
+    <string name="today">اليوم</string>
+    <string name="upcoming_hourly_temperatures">:درجات الحرارة القادمة لكل ساعة</string>
+    <string name="cloudiness">" :الغيوم"</string>
+    <string name="upcoming_daily_temperatures">:درجات الحرارة القادمة لكل يوم</string>
+    <string name="pressure">" :الضغط"</string>
+
+</resources>

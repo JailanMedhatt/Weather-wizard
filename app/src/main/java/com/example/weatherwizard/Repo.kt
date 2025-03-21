@@ -3,13 +3,14 @@ package com.example.weatherwizard
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Pojos.CurrentWeatherResponse
 import com.example.weatherwizard.Pojos.ThreeHoursResponse
+import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
 
 class Repository private constructor(val remoteDataSource: RemoteDataSource){
-    suspend fun getCurrentWeather(latitude:Double,logitude:Double):Response<CurrentWeatherResponse>{
+     fun getCurrentWeather(latitude:Double,logitude:Double): Flow<CurrentWeatherResponse> {
         return remoteDataSource.getCurrentWeatherResponse(latitude=latitude,logitude=logitude)
     }
-    suspend fun getHoursResponse(latitude: Double,longitude: Double):Response<ThreeHoursResponse>{
+     fun getHoursResponse(latitude: Double,longitude: Double): Flow<List<CurrentWeatherResponse>> {
         return remoteDataSource.getHoursResponse(latitude=latitude,logitude=longitude)
 
     }

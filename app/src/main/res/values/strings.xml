@@ -8,4 +8,8 @@
     <string name="wind_speed">"Wind Speed : "</string>
     <string name="km_hr">"%1$s km/hr "</string>
     <string name="today">Today</string>
+    <string name="upcoming_hourly_temperatures">Upcoming Hourly Temperatures :</string>
+    <string name="cloudiness">" Cloudiness :"</string>
+    <string name="upcoming_daily_temperatures">Upcoming Daily Temperatures :</string>
+    <string name="pressure">" Pressure :"</string>
 </resources>
