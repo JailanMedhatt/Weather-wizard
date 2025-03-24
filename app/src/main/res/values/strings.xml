@@ -12,4 +12,18 @@
     <string name="cloudiness">" Cloudiness :"</string>
     <string name="upcoming_daily_temperatures">Upcoming Daily Temperatures :</string>
     <string name="pressure">" Pressure :"</string>
+    <string name="english">English</string>
+    <string name="arabic">Arabic</string>
+    <string name="language">Language</string>
+    <string name="location">Location</string>
+    <string name="wind_speed_unit">Wind Speed Unit</string>
+    <string name="temp_unit">Temp Unit</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="celsius">Celsius</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="gps">Gps</string>
+    <string name="map">Map</string>
+    <string name="meter_sec">Meter/Sec</string>
+    <string name="mile_hour">Mile/Hour</string>
+    <string name="feels_like">Feels like :</string>
 </resources>

@@ -2,6 +2,7 @@ package com.example.weatherwizard.home.viewModel
 import android.location.Location
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,6 +28,10 @@ import java.util.Locale
 class HomeViewModel(private val repo :Repository):ViewModel() {
      lateinit var fusedLocationProviderClient: FusedLocationProviderClient
      lateinit var locationState: MutableState<Location>
+    private   var _languageState: MutableStateFlow<String> = MutableStateFlow("en")
+
+    private   var _unitState: MutableStateFlow<String> = MutableStateFlow("metric")
+
    private var date :MutableLiveData<String> = MutableLiveData()
     val immutableDate : LiveData<String> = date
     private var CurrentWeatherresponse = MutableStateFlow<Response>(Response.Loading)
@@ -36,6 +41,13 @@ class HomeViewModel(private val repo :Repository):ViewModel() {
     private var daysResponse = MutableStateFlow<Response>(Response.Loading)
     val immutableDaysResponse =daysResponse.asStateFlow()
    lateinit private var hoursList :Flow<List<CurrentWeatherResponse>>
+
+    fun setLanguage(language: String) {
+        _languageState.value = language
+    }
+    fun setTempUnit(unit: String) {
+        _unitState.value = unit
+    }
 
     fun getResponses(){
         viewModelScope.launch {
@@ -70,7 +82,7 @@ class HomeViewModel(private val repo :Repository):ViewModel() {
 
     }
     suspend fun getCurrentWeather(){
-         repo.getCurrentWeather(latitude = locationState.value.latitude,logitude = locationState.value.longitude).collect{
+         repo.getCurrentWeather(latitude = locationState.value.latitude,logitude = locationState.value.longitude,_languageState.value,_unitState.value).collect{
             CurrentWeatherresponse.value=Response.CurrentWeatherSuccess(it)
         }
 
@@ -78,7 +90,7 @@ class HomeViewModel(private val repo :Repository):ViewModel() {
     }
    suspend fun getHours(){
                 repo.getHoursResponse(latitude = locationState.value.latitude,
-                    longitude = locationState.value.longitude).map {
+                    longitude = locationState.value.longitude,_languageState.value, units = _unitState.value).map {
                       hoursList= flowOf(it)
                         it.take(8)
 

@@ -5,13 +5,27 @@
     <string name="home">الرئيسية</string>
     <string name="alert">تنبيه</string>
     <string name="setting">الإعدادات</string>
-    <string name="humidity">" :الرطوبة"</string>
-    <string name="wind_speed">" :سرعة الرياح"</string>
-    <string name="km_hr">"%1$s كم/ساعة"</string>
+    <string name="humidity">"الرطوبة : "</string>
+    <string name="wind_speed">"سرعة الرياح : "</string>
+    <string name="km_hr">"%1$s كم/ساعة "</string>
     <string name="today">اليوم</string>
-    <string name="upcoming_hourly_temperatures">:درجات الحرارة القادمة لكل ساعة</string>
-    <string name="cloudiness">" :الغيوم"</string>
-    <string name="upcoming_daily_temperatures">:درجات الحرارة القادمة لكل يوم</string>
-    <string name="pressure">" :الضغط"</string>
+    <string name="upcoming_hourly_temperatures">درجات الحرارة القادمة لكل ساعة :</string>
+    <string name="cloudiness">" الغيوم :"</string>
+    <string name="upcoming_daily_temperatures">درجات الحرارة القادمة لكل يوم :</string>
+    <string name="pressure">" الضغط :"</string>
+    <string name="english">الإنجليزية</string>
+    <string name="arabic">العربية</string>
+    <string name="language">اللغة</string>
+    <string name="location">الموقع</string>
+    <string name="wind_speed_unit">وحدة سرعة الرياح</string>
+    <string name="temp_unit">وحدة الحرارة</string>
+    <string name="kelvin">كلفن</string>
+    <string name="celsius">درجة مئوية</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="gps">نظام تحديد المواقع</string>
+    <string name="map">الخريطة</string>
+    <string name="meter_sec">متر/ثانية</string>
+    <string name="mile_hour">ميل/ساعة</string>
+    <string name="feels_like">يشعر وكأنه : </string>
 
 </resources>

@@ -14,9 +14,9 @@ val apiKey ="f43cdb818e5d692f028dfc4bf07e12be"
 
 interface RetrofitHandler{
     @GET("weather")
-   suspend fun getCurrentWeatherResponse(@Query("lat" )  latitude:Double,@Query("lon" )  longitude:Double,@Query("appid" )  appid:String= apiKey): Response<CurrentWeatherResponse>
+   suspend fun getCurrentWeatherResponse(@Query("lat" )  latitude:Double,@Query("lon" )  longitude:Double,@Query("lang") lang:String,@Query("units") units:String,@Query("appid" )  appid:String= apiKey): Response<CurrentWeatherResponse>
     @GET("forecast")
-    suspend fun getHoursResponse(@Query("lat" )  latitude:Double,@Query("lon" )  longitude:Double,@Query("appid" )  appid:String= apiKey): Response<ThreeHoursResponse>
+    suspend fun getHoursResponse(@Query("lat" )  latitude:Double,@Query("lon" )  longitude:Double,@Query("lang") lang:String,@Query("units") units:String,@Query("appid" )  appid:String= apiKey): Response<ThreeHoursResponse>
 }
 object RetrofitHelper{
     val baseUrl ="https://api.openweathermap.org/data/2.5/"

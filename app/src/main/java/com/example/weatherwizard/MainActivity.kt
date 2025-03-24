@@ -3,8 +3,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -41,28 +43,56 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import java.util.Locale
+
 const val TAG = "MainActivity"
 const val REQUEST_LOCATION_CODE = 2005
 class MainActivity : ComponentActivity() {
     private lateinit var homeViewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-         homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(Repository.getInstance(
+        homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(Repository.getInstance(
             RemoteDataSource(RetrofitHelper.retrofitInstance)
         ))).
         get(HomeViewModel::class.java)
+        applySavedLanguage(this)
+       // (application as MyApplication).applySavedLanguage(this)
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+
+
+
         setContent {
+//            homeViewModel.languageState = remember { mutableStateOf("en") }
             homeViewModel.locationState = remember { mutableStateOf(Location(LocationManager.GPS_PROVIDER)) }
+
             MainScreen()
 
             //Log.i(TAG, "onCreate: ${locationState.value.latitude}")
 
         }
+
+
     }
 
+    fun applySavedLanguage(context: Context) {
+        val sharedPreferences = SharedPref.getInstance(context)
+        val language = sharedPreferences.getLanguage() ?: "en"
+        Log.i("tag", "applySavedLanguage:$language ")
+       // homeViewModel.languageState.value= language
+        homeViewModel.setLanguage(language)
+        val locale = Locale(language)
+        Locale.setDefault(locale)
 
+        val config = Configuration(resources.configuration)
+        config.setLocale(locale)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            context.createConfigurationContext(config)
+            resources.updateConfiguration(config, resources.displayMetrics)
+        } else {
+            resources.updateConfiguration(config, resources.displayMetrics)
+        }
+    }
     @OptIn(ExperimentalGlideComposeApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
@@ -156,4 +186,5 @@ class MainActivity : ComponentActivity() {
             LocationManager.NETWORK_PROVIDER
         )
     }
+
 }

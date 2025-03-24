@@ -24,6 +24,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,15 +35,23 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.R
 import com.example.weatherwizard.Response
+import com.example.weatherwizard.SharedPref
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import kotlinx.coroutines.delay
+
+
 
 
 @ExperimentalGlideComposeApi
 @Composable
 fun HomeScreen(viewModel: HomeViewModel){
     viewModel.getTodayDateTime()
- LaunchedEffect(Unit) {
+    val sharedPref= SharedPref.getInstance(LocalContext.current)
+    val unit=sharedPref.getTempUnit()?:"metric"
+    val unitSpeed=sharedPref.getWindSpeedUnit()?:"Meter/Sec"
+    LaunchedEffect(Unit) {
+
+     viewModel.setTempUnit(unit)
      while (viewModel.locationState.value.latitude == 0.0 && viewModel.locationState.value.longitude == 0.0) {
          delay(500) // Wait for location updates
      }
@@ -50,15 +59,11 @@ fun HomeScreen(viewModel: HomeViewModel){
         viewModel.getResponses()
      while (true) {
          delay(60000) // Update every second (adjust as needed)
-         viewModel.getTodayDateTime()
-     }
+         viewModel.getTodayDateTime() }
     }
     val currentWeatherResponse= viewModel.immutableCurrentWeatherResponse.collectAsStateWithLifecycle()
     val daysResponse= viewModel.immutableDaysResponse.collectAsStateWithLifecycle()
     val hoursResponse= viewModel.immutableHoursResponse.collectAsStateWithLifecycle()
-//    val currentWeather=viewModel.currentWeather.observeAsState()
-//    val hoursList=viewModel.immutableHoursList.observeAsState()
-//    val daysList=viewModel.immutableDaysList.observeAsState()
     val date =viewModel.immutableDate.observeAsState()
     Column (  modifier = Modifier
         .padding(horizontal = 32.dp)
@@ -77,8 +82,6 @@ fun HomeScreen(viewModel: HomeViewModel){
         }
         else{
             val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
-//            val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
-//            val daysList= (daysResponse.value as Response.HoursOrDaysSuccess).data
             Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,){
                 Column(Modifier.padding(top = 16.dp))  {
                     Row {   Text(text = " ${currentWeather.name?:""}, ${currentWeather.sys?.country}", color = Color.White , fontSize = 22.sp,
@@ -86,14 +89,18 @@ fun HomeScreen(viewModel: HomeViewModel){
                     Image(painter = painterResource(R.drawable.location),
                         contentDescription = "",Modifier.size(24.dp))
                     }
+                    Row {
+                        Text(
 
-                Text(
-                    text ="Feels like : ${currentWeather.main?.feels_like} °K",
-                    style = MaterialTheme.typography.headlineSmall, color = Color.White
-                    , fontSize = 16.sp
-                )}
-//        Image(painter = painterResource(R.drawable.sun_rain)
-//            , contentDescription = "",Modifier.size(200.dp))
+                            text = stringResource(R.string.feels_like) +" ${currentWeather.main?.feels_like}",
+                            style = MaterialTheme.typography.headlineSmall, color = Color.White
+                            , fontSize = 16.sp
+                        )
+                       TempUnitText(unit = unit, topPadding = 4)
+                    }
+
+               }
+
                 Column(Modifier.padding(top = 16.dp)) {
                     Row{
                     Text(text = stringResource(R.string.today), color = Color.White , fontSize = 22.sp,
@@ -110,9 +117,6 @@ fun HomeScreen(viewModel: HomeViewModel){
 
 
             Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment =  Alignment.CenterHorizontally) {
-//                GlideImage(
-//            model = "https://openweathermap.org/img/wn/${currentWeather.value?.weather?.get(0)?.icon}@2x.png", contentDescription = "",
-//            modifier = Modifier.size(100.dp))
                 Image(painter = painterResource( R.drawable.cloudy_sunny), contentDescription = "",Modifier.size(150.dp))
                 Row(Modifier.padding(top = 16.dp)) {
                     Text(
@@ -120,8 +124,7 @@ fun HomeScreen(viewModel: HomeViewModel){
                         style = MaterialTheme.typography.headlineLarge, color = Color.White
                         , fontSize = 43.sp
                     )
-                    Text(text = "\u00B0", color = Color.White, fontSize = 52.sp, modifier = Modifier.padding(start = 8.dp))
-                    Text(text = "K", color = Color.White, fontSize = 22.sp, modifier = Modifier.padding(top = 8.dp))
+                    TempUnitText(unit, fontSize = 22, circleSize = 40, startPadding = 8, topPadding = 8)
                 }
                 Text(
                     text = currentWeather.weather?.get(0)?.description ?: "",
@@ -140,10 +143,11 @@ fun HomeScreen(viewModel: HomeViewModel){
                           stringResource(R.string.pressure),"${currentWeather.main?.pressure.toString()} hPa")
 
                     }
+
                     Column{
 
                         DetailedRow(0,R.drawable.wind," ${stringResource(R.string.wind_speed)} :"
-                            ,"${currentWeather.wind?.speed.toString()} km/hr")
+                            ,"${currentWeather.wind?.speed.toString()} $unitSpeed")
 
                          DetailedRow(8,R.drawable.humidity, stringResource(R.string.humidity),"${currentWeather.main?.humidity.toString()}%")
 
@@ -161,7 +165,7 @@ fun HomeScreen(viewModel: HomeViewModel){
                 items(hoursList.size){
                         currentIndex->
                     val obj= hoursList.get(currentIndex)
-                    HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = obj.main?.temp.toString())
+                    HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = obj.main?.temp.toString(),unit)
 
 
 
@@ -181,16 +185,12 @@ fun HomeScreen(viewModel: HomeViewModel){
                 daysList.forEach {
                         currentObj->
 
-                    DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = currentObj.main?.temp.toString())
-
+                    DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = currentObj.main?.temp.toString(),unit)
                 }
-            }}
-
-
-
+            }
+            }
         }
     }
-
 }
 @Composable
 fun DetailedRow(topPadding :Int, icon:Int,description:String,value:String){
@@ -204,7 +204,7 @@ fun DetailedRow(topPadding :Int, icon:Int,description:String,value:String){
 
 @ExperimentalGlideComposeApi
 @Composable
-fun HourCard(date:String, icon:String,temp:String){
+fun HourCard(date:String, icon:String,temp:String, unit:String){
     Column (Modifier
         .padding(end = 32.dp)
         .background(MyColors.secondary.color, shape = RoundedCornerShape(20.dp))
@@ -225,14 +225,14 @@ fun HourCard(date:String, icon:String,temp:String){
                 .padding(start = 8.dp, bottom = 16.dp))
         Row(Modifier.padding(start = 8.dp)) {
             Text(text = temp,color = Color.White)
-            Text(" °K",color = Color.White)
+            TempUnitText(unit)
         }
 
     }
     }
 @ExperimentalGlideComposeApi
 @Composable
-fun DayCard(date:String, icon:String,temp:String){
+fun DayCard(date:String, icon:String,temp:String,unit: String){
 
 
     Row (  Modifier
@@ -255,9 +255,27 @@ fun DayCard(date:String, icon:String,temp:String){
                 .padding(start = 8.dp))
         Row(Modifier.padding(start = 8.dp, top = 16.dp)) {
             Text(text = temp,color = Color.White)
-            Text(" °K",color = Color.White)
+            TempUnitText(unit)
            // Icon(painter = )
         }
 
 
 }}
+
+@Composable
+fun TempUnitText(unit :String,fontSize: Int=16,circleSize :Int=22,topPadding: Int=0,startPadding:Int=4){
+    if(unit=="metric"){
+
+            Text(text = "\u00B0", color = Color.White, fontSize = circleSize.sp, modifier = Modifier.padding(start = startPadding.dp))
+                    Text(text = "C", color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
+    }
+    else if(unit=="imperial"){
+        Text(text = "\u00B0", color = Color.White, fontSize = circleSize.sp, modifier = Modifier.padding(start = startPadding.dp))
+        Text(text = "F", color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
+    }
+    else{
+        Text(text = "\u00B0", color = Color.White, fontSize = circleSize.sp, modifier = Modifier.padding(start = startPadding.dp))
+        Text(text = "K", color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
+
+    }
+}
