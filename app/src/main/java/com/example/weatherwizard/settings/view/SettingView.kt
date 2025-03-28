@@ -31,7 +31,7 @@ import com.example.weatherwizard.SharedPref
 import com.example.weatherwizard.settings.viewModel.SettingsViewModel
 import com.example.weatherwizard.ui.theme.orange
 @Composable
-fun SettingScreen(){
+fun SettingScreen(onNavigateToMap:()->Unit){
     val viewModel= SettingsViewModel()
     val context = LocalContext.current
     val sharedPref= SharedPref.getInstance(context)
@@ -39,9 +39,9 @@ fun SettingScreen(){
         val selectedLanguage = remember { mutableStateOf(sharedPref.getLanguage()?:"en") }
         val selectedTempUnit = remember {  mutableStateOf( sharedPref.getTempUnit()?:"metric")}
         val selectedWindSpeedUnit = remember { mutableStateOf(sharedPref.getWindSpeedUnit()?:"Meter/Sec") }
-
+        val  isGpsSelcted = remember { mutableStateOf(sharedPref.getGpsSelected()) }
+    val selectedLocation = remember { mutableStateOf("Gps") }
     val isArabic = selectedLanguage.value == "ar" || selectedLanguage.value == "العربية"
-
     selectedLanguage.value = if (isArabic) "العربية" else "English"
     selectedTempUnit.value = when (selectedTempUnit.value) {
         "metric", "Celsius", "درجة مئوية" -> if (isArabic) "درجة مئوية" else "Celsius"
@@ -54,8 +54,10 @@ fun SettingScreen(){
     } else {
         if (isArabic) "متر/ثانية" else "Meter/Sec"
     }
-
-
+    selectedLocation.value = when(isGpsSelcted.value){
+        true->if(isArabic)"نظام تحديد المواقع" else "Gps"
+        else->if(isArabic)"الخريطة" else "Map"
+    }
 
     val settingItems = listOf(SettingItem(icon = R.drawable.language, description = stringResource(R.string.language)
         , options = listOf(stringResource(R.string.english), stringResource(R.string.arabic)),selectedLanguage
@@ -67,7 +69,8 @@ fun SettingScreen(){
         ),selectedTempUnit,action ={selectedOption-> viewModel.changeTempUnit(selectedOption,context) }
     ),
         SettingItem(icon = R.drawable.my_location, description = stringResource(R.string.location)
-            , options = listOf(stringResource(R.string.gps), stringResource(R.string.map)),selectedLanguage
+            , options = listOf(stringResource(R.string.gps), stringResource(R.string.map)),selectedLocation,
+            action = {selectedLocation->viewModel.changeLocationSelection(selectedLocation,context,onNavigateToMap)}
         ),
         SettingItem(icon = R.drawable.wind_setting, description = stringResource(R.string.wind_speed_unit)
             , options = listOf(stringResource(R.string.meter_sec),
@@ -80,8 +83,6 @@ fun SettingScreen(){
        settingItems.forEachIndexed { index, settingItem -> RadioButtonRow(options = settingItem.options, icon = settingItem.icon, description = settingItem.description,
            action =settingItem.action,settingItem.savedOption)  }
     }
-
-
 }
 
 @Composable

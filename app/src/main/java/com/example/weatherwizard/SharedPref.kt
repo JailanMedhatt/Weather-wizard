@@ -43,6 +43,24 @@ fun setTempUnit(tempUnit: String) {
     fun getWindSpeedUnit(): String? {
         return sharedPreferences.getString(WindSpeedUnit, "Meter/Sec")
     }
+    fun setLongitudeAndLatitude(longitude: Double, latitude: Double) {
+        editor.putFloat("longitude", longitude.toFloat()).apply()
+        editor.putFloat("latitude", latitude.toFloat()).apply()
+        editor.commit()
+    }
+    fun getLatitudeAndLongitude():Pair< Double,Double> {
+        return Pair(sharedPreferences.getFloat("latitude", 0.0f).toDouble()
+            ,sharedPreferences.getFloat("longitude", 0.0f).toDouble())
+    }
+
+    fun setGpsSelected(isSelected: Boolean) {
+        editor.putBoolean("gpsSelected", isSelected).apply()
+        editor.commit()
+    }
+    fun getGpsSelected(): Boolean {
+        return sharedPreferences.getBoolean("gpsSelected", true)
+    }
+
 
 
 }

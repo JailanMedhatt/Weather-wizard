@@ -9,10 +9,10 @@ import java.util.Locale
 
 class SettingsViewModel {
     fun changeAppLanguage(language: String, context: Context) {
-        val locale = Locale(if (language == "Arabic"||language=="العربية") "en" else "en")
-        Locale.setDefault(locale)
-        val config = Configuration()
-        config.setLocale(locale)
+//        val locale = Locale(if (language == "Arabic"||language=="العربية") "ar" else "en")
+//        Locale.setDefault(locale)
+//        val config = Configuration()
+//        config.setLocale(locale)
         val sharedPref= SharedPref.getInstance(context)
         sharedPref.setLanguage(if (language == "Arabic"||language=="العربية") "ar" else "en")
         Log.i("tag", "changeAppLanguage: ${sharedPref.getLanguage()}")
@@ -35,4 +35,13 @@ class SettingsViewModel {
             sharedPref.setTempUnit("standard")
             sharedPref.setWindSpeedUnit("Meter/Sec")
     }}
+    fun changeLocationSelection(selectedLocation: String, context: Context,onNavigateToMap :()->Unit) {
+        val sharedPref= SharedPref.getInstance(context)
+        if(selectedLocation=="Map"||selectedLocation=="الخريطة"){
+            onNavigateToMap.invoke()
+        }
+        else{
+            sharedPref.setGpsSelected(true)
+        }
+    }
 }

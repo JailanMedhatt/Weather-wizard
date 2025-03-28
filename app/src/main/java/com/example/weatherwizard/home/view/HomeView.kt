@@ -1,6 +1,4 @@
 package com.example.weatherwizard.home.view
-
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,27 +34,41 @@ import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.R
 import com.example.weatherwizard.Response
 import com.example.weatherwizard.SharedPref
+import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import kotlinx.coroutines.delay
 
-
-
-
 @ExperimentalGlideComposeApi
 @Composable
-fun HomeScreen(viewModel: HomeViewModel){
+fun HomeScreen(viewModel: HomeViewModel,location: FavoriteLocation?){
     viewModel.getTodayDateTime()
     val sharedPref= SharedPref.getInstance(LocalContext.current)
     val unit=sharedPref.getTempUnit()?:"metric"
-    val unitSpeed=sharedPref.getWindSpeedUnit()?:"Meter/Sec"
+    var unitSpeed=sharedPref.getWindSpeedUnit()?:"Meter/Sec"
+    val isGpsSelected = sharedPref.getGpsSelected()
+    if(sharedPref.getLanguage()=="ar"){
+        unitSpeed= if(unitSpeed=="Meter/Sec") "متر/ثانية" else "ميل/ساعة"
+
+    }
     LaunchedEffect(Unit) {
 
      viewModel.setTempUnit(unit)
+        if(location?.longitude==0.0&&location.latitude==0.0){
+            if(isGpsSelected){
+
+
      while (viewModel.locationState.value.latitude == 0.0 && viewModel.locationState.value.longitude == 0.0) {
          delay(500) // Wait for location updates
      }
-     Log.i("TAG", "HomeScreen: ")
-        viewModel.getResponses()
+        viewModel.getResponses(0.0,0.0)}
+            else{
+                val pair = sharedPref.getLatitudeAndLongitude()
+                viewModel.getResponses(latitude = pair.first, longitude = pair.second)
+            }
+        }
+        else{
+            viewModel.getResponses(longitude = location?.longitude!!, latitude = location.latitude)
+        }
      while (true) {
          delay(60000) // Update every second (adjust as needed)
          viewModel.getTodayDateTime() }
@@ -138,18 +150,20 @@ fun HomeScreen(viewModel: HomeViewModel){
                     Column {
 
                          DetailedRow(0,R.drawable.cloud,
-                             stringResource(R.string.cloudiness),"${currentWeather.clouds?.all.toString()}%")
+                             " : ","${currentWeather.clouds?.all.toString()}%")
                       DetailedRow(8,R.drawable.pressure,
-                          stringResource(R.string.pressure),"${currentWeather.main?.pressure.toString()} hPa")
+                         " : ","${currentWeather.main?.pressure.toString()}"+ stringResource(R.string.hpa)
+                      )
 
                     }
 
                     Column{
+                        //${stringResource(R.string.wind_speed)}
 
-                        DetailedRow(0,R.drawable.wind," ${stringResource(R.string.wind_speed)} :"
+                        DetailedRow(0,R.drawable.wind,"  : "
                             ,"${currentWeather.wind?.speed.toString()} $unitSpeed")
 
-                         DetailedRow(8,R.drawable.humidity, stringResource(R.string.humidity),"${currentWeather.main?.humidity.toString()}%")
+                         DetailedRow(8,R.drawable.humidity, " : ","${currentWeather.main?.humidity.toString()}%")
 
                     }
                 }
@@ -267,15 +281,15 @@ fun TempUnitText(unit :String,fontSize: Int=16,circleSize :Int=22,topPadding: In
     if(unit=="metric"){
 
             Text(text = "\u00B0", color = Color.White, fontSize = circleSize.sp, modifier = Modifier.padding(start = startPadding.dp))
-                    Text(text = "C", color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
+                    Text(text = stringResource(R.string.c), color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
     }
     else if(unit=="imperial"){
         Text(text = "\u00B0", color = Color.White, fontSize = circleSize.sp, modifier = Modifier.padding(start = startPadding.dp))
-        Text(text = "F", color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
+        Text(text = stringResource(R.string.f), color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
     }
     else{
         Text(text = "\u00B0", color = Color.White, fontSize = circleSize.sp, modifier = Modifier.padding(start = startPadding.dp))
-        Text(text = "K", color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
+        Text(text = stringResource(R.string.k), color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
 
     }
 }

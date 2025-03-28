@@ -27,5 +27,10 @@
     <string name="meter_sec">متر/ثانية</string>
     <string name="mile_hour">ميل/ساعة</string>
     <string name="feels_like">يشعر وكأنه : </string>
+    <string name="c">س</string>
+    <string name="f">ف</string>
+    <string name="k">ك</string>
+    <string name="hpa">هـ.ب</string>
+    <string name="delete">حذف</string>
 
 </resources>

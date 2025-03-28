@@ -21,6 +21,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -34,9 +37,12 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
+import com.example.weatherwizard.data.database.AppDb
+import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import com.example.weatherwizard.navigationUtills.MyNavHost
 import com.example.weatherwizard.navigationUtills.navBar
+import com.example.weatherwizard.ui.theme.primary
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -52,7 +58,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(Repository.getInstance(
-            RemoteDataSource(RetrofitHelper.retrofitInstance)
+            RemoteDataSource(RetrofitHelper.retrofitInstance),
+            LocalDataSource(AppDb.getInstance(this).getDao())
         ))).
         get(HomeViewModel::class.java)
         applySavedLanguage(this)
@@ -71,7 +78,6 @@ class MainActivity : ComponentActivity() {
             //Log.i(TAG, "onCreate: ${locationState.value.latitude}")
 
         }
-
 
     }
 
@@ -98,7 +104,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun MainScreen() {
 
-
+        val snackBarHostState = remember { SnackbarHostState() }
         val gradient = Brush.verticalGradient(colors =
         listOf(Color(0xFF08244F),Color(0xFF134CB5),
             Color(0xFF0B42AB)))
@@ -112,11 +118,21 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier
                 .fillMaxSize(),
             bottomBar = { navBar(navController) },
-            contentWindowInsets = ScaffoldDefaults.contentWindowInsets
+            contentWindowInsets = ScaffoldDefaults.contentWindowInsets ,
+            snackbarHost = {
+                SnackbarHost(snackBarHostState) { data ->
+                    Snackbar(
+                        snackbarData = data,
+                        contentColor = Color.Black, // Custom text color
+                        actionColor = primary // Custom action label color,
+,                        containerColor = Color.White// Custom background color
+                    )
+                }
+            }
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
 
-                MyNavHost(navController, homeViewModel)
+                MyNavHost(navController, homeViewModel,snackBarHostState)
 
 
         }}

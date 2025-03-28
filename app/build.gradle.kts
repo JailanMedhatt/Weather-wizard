@@ -86,4 +86,11 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.8.9")
     //google location
     implementation ( "com.google.android.gms:play-services-location:21.0.1")
+    //Location
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+    //Google Maps in Jetpack Compose
+    implementation("com.google.maps.android:maps-compose:6.4.1")
+    //Google Places API and Jetpack Compose support for Places
+    implementation("com.google.android.libraries.places:places:3.1.0")
+    implementation("com.google.maps.android:places-compose:0.1.2")
 }

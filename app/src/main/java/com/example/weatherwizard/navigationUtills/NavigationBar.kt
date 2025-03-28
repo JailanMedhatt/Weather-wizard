@@ -27,7 +27,7 @@ fun navBar(navController: NavHostController){
         NavigationItem(
             title = stringResource(R.string.home),
             icon = Icons.Default.Home,
-            route = ScreenRoute.HomeRoute
+            route = ScreenRoute.HomeRoute(0.0,0.0)
         ),
         NavigationItem(
             title = stringResource(R.string.favourite),
@@ -87,7 +87,7 @@ fun navBarP(){
         NavigationItem(
             title = stringResource(R.string.home),
             icon = Icons.Default.Home,
-            route = ScreenRoute.HomeRoute
+            route = ScreenRoute.HomeRoute(0.0,0.0)
         ),
         NavigationItem(
             title = stringResource(R.string.favourite),
