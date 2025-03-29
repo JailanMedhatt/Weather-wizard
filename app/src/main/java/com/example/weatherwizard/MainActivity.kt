@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(Repository.getInstance(
             RemoteDataSource(RetrofitHelper.retrofitInstance),
-            LocalDataSource(AppDb.getInstance(this).getDao())
+            LocalDataSource(AppDb.getInstance(this).getDao(),AppDb.getInstance(this).getAlertDao())
         ))).
         get(HomeViewModel::class.java)
         applySavedLanguage(this)

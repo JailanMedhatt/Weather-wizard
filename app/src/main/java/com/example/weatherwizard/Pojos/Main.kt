@@ -1,5 +1,8 @@
 package com.example.weatherwizard.Pojos
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Main(
     val feels_like: Double,
     val grnd_level: Int,

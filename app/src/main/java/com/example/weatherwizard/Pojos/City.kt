@@ -1,5 +1,8 @@
 package com.example.weatherwizard.Pojos
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class City(
     val coord: Coord,
     val country: String,

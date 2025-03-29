@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherwizard.Pojos.CurrentWeatherResponse
+import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.Repository
 import com.example.weatherwizard.Response
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -16,7 +17,9 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -30,9 +33,9 @@ import java.util.Locale
 class HomeViewModel(private val repo :Repository):ViewModel() {
      lateinit var fusedLocationProviderClient: FusedLocationProviderClient
      lateinit var locationState: MutableState<Location>
-    private   var _languageState: MutableStateFlow<String> = MutableStateFlow("en")
-    private   var _unitState: MutableStateFlow<String> = MutableStateFlow("metric")
-   private var date :MutableLiveData<String> = MutableLiveData()
+     private   var _languageState: MutableStateFlow<String> = MutableStateFlow("en")
+     private   var _unitState: MutableStateFlow<String> = MutableStateFlow("metric")
+    private var date :MutableLiveData<String> = MutableLiveData()
     val immutableDate : LiveData<String> = date
     private var CurrentWeatherresponse = MutableStateFlow<Response>(Response.Loading)
     val immutableCurrentWeatherResponse =CurrentWeatherresponse.asStateFlow()
@@ -76,17 +79,36 @@ class HomeViewModel(private val repo :Repository):ViewModel() {
     suspend fun getCurrentWeather(longitude: Double,latitude: Double){
         val myLongitude=if(longitude==0.0) locationState.value.longitude else longitude
         val myLatitude=if(latitude==0.0) locationState.value.latitude else latitude
-         repo.getCurrentWeather(latitude = myLatitude,logitude = myLongitude,_languageState.value,_unitState.value).collect{
+         repo.getCurrentWeather(latitude = myLatitude,logitude = myLongitude,_languageState.value,_unitState.value).catch {
+             CurrentWeatherresponse.value=Response.Error(it.message.toString())
+         }.collect{
             CurrentWeatherresponse.value=Response.CurrentWeatherSuccess(it)
         }
 
 
     }
+    suspend fun handleResponses(obj : FavWeatherDetails){
+
+        CurrentWeatherresponse.value = Response.CurrentWeatherSuccess(obj.currentWeatherResponse)
+
+        // Process the hours list
+        val list: Flow<List<CurrentWeatherResponse>> = flowOf(obj.hoursList).map { it.take(8) }
+
+        list.collect { filteredList ->
+            hoursList = flowOf(filteredList) // ✅ Update hoursList properly
+            hoursResponse.value = Response.HoursOrDaysSuccess(filteredList) // ✅ Assign the collected value
+        }
+        getDays()
+
+    }
    suspend fun getHours(longitude: Double,latitude: Double){
        val myLongitude=if(longitude==0.0) locationState.value.longitude else longitude
        val myLatitude=if(latitude==0.0) locationState.value.latitude else latitude
-                repo.getHoursResponse(latitude = myLatitude,
-                    longitude = myLongitude,_languageState.value, units = _unitState.value).map {
+       repo.getHoursResponse(latitude = myLatitude,
+                    longitude = myLongitude,_languageState.value, units = _unitState.value).catch {
+                        hoursResponse.value=Response.Error(it.message.toString())
+       }
+           .map {
                       hoursList= flowOf(it)
                         it.take(8)
 

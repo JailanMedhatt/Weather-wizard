@@ -2,11 +2,10 @@ package com.example.weatherwizard
 
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Pojos.CurrentWeatherResponse
-import com.example.weatherwizard.Pojos.ThreeHoursResponse
+import com.example.weatherwizard.Pojos.FavWeatherDetails
+import com.example.weatherwizard.alert.model.AlertModel
 import com.example.weatherwizard.data.database.LocalDataSource
-import com.example.weatherwizard.data.model.FavoriteLocation
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Response
 
 class Repository private constructor(val remoteDataSource: RemoteDataSource,val localDataSource: LocalDataSource){
      fun getCurrentWeather(latitude:Double,logitude:Double,lang:String,units:String): Flow<CurrentWeatherResponse> {
@@ -16,15 +15,23 @@ class Repository private constructor(val remoteDataSource: RemoteDataSource,val 
         return remoteDataSource.getHoursResponse(latitude=latitude,logitude=longitude,lang=lang,units=units)
 
     }
-     suspend  fun insertFavouriteLocation(location: FavoriteLocation) {
+    suspend fun insertFavouriteLocation(location: FavWeatherDetails) {
         localDataSource.insertLocation(location)
     }
-    fun getLocations(): Flow<List<FavoriteLocation>> {
-        return localDataSource.getLocations()
-    }
-    suspend fun deleteLocation(location: FavoriteLocation) {
+    fun getLocations(): Flow<List<FavWeatherDetails>> {
+        return localDataSource.getLocations()}
+    suspend fun deleteLocation(location: FavWeatherDetails) {
         localDataSource.deleteLocation(location)
     }
+    suspend fun insertAlert(alert: AlertModel) {
+        localDataSource.insertAlert(alert)
+    }
+    fun getAlerts(): Flow<List<AlertModel>> {
+        return localDataSource.getAlerts()}
+    suspend fun deleteAlert(alert: AlertModel) {
+        localDataSource.deleteAlert(alert)
+    }
+
 
 
     companion object{

@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.Repository
 import com.example.weatherwizard.SharedPref
 import com.example.weatherwizard.data.model.FavoriteLocation
@@ -21,7 +22,9 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.intellij.lang.annotations.Language
 
 class MapScreenViewModel(private val placesClient: PlacesClient,private val repository: Repository): ViewModel() {
 
@@ -106,9 +109,25 @@ class MapScreenViewModel(private val placesClient: PlacesClient,private val repo
             longitude = latLng.longitude
         }
     }
-    fun insertFavouriteLocation(favouriteLocation: FavoriteLocation){
+    fun insertFavouriteLocation(favouriteLocation: FavoriteLocation,language: String, unit: String){
         viewModelScope.launch {
-            repository.insertFavouriteLocation(favouriteLocation)
+            var favWeatherDetails: FavWeatherDetails? = null
+
+            val currentWeatherFlow = repository.getCurrentWeather(
+                favouriteLocation.latitude, favouriteLocation.longitude, language, unit
+            )
+
+            val hoursWeatherFlow = repository.getHoursResponse(
+                favouriteLocation.latitude, favouriteLocation.longitude, language, unit
+            )
+
+            combine(currentWeatherFlow, hoursWeatherFlow) { weatherResponse, hoursResponse ->
+                FavWeatherDetails(favouriteLocation,weatherResponse, hoursResponse)
+            }.collect { favDetails ->
+                favWeatherDetails = favDetails
+            }
+            repository.insertFavouriteLocation(favWeatherDetails!!)
+//            repository.insertFavouriteLocation(favouriteLocation)
             mutableMessage.emit("Location Added Successfully!")
         }
 

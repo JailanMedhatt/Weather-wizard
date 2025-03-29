@@ -1,4 +1,5 @@
 package com.example.weatherwizard.home.view
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,21 +33,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.weatherwizard.MyColors
+import com.example.weatherwizard.Pojos.CurrentWeatherResponse
+import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.R
 import com.example.weatherwizard.Response
 import com.example.weatherwizard.SharedPref
 import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import kotlinx.coroutines.delay
+import kotlinx.serialization.json.Json
 
 @ExperimentalGlideComposeApi
 @Composable
-fun HomeScreen(viewModel: HomeViewModel,location: FavoriteLocation?){
+fun HomeScreen(viewModel: HomeViewModel,obj: String){
     viewModel.getTodayDateTime()
     val sharedPref= SharedPref.getInstance(LocalContext.current)
     val unit=sharedPref.getTempUnit()?:"metric"
     var unitSpeed=sharedPref.getWindSpeedUnit()?:"Meter/Sec"
     val isGpsSelected = sharedPref.getGpsSelected()
+
+    val MyObj = if(obj!="{}") Json.decodeFromString<FavWeatherDetails>(obj) else ""
     if(sharedPref.getLanguage()=="ar"){
         unitSpeed= if(unitSpeed=="Meter/Sec") "متر/ثانية" else "ميل/ساعة"
 
@@ -53,7 +60,7 @@ fun HomeScreen(viewModel: HomeViewModel,location: FavoriteLocation?){
     LaunchedEffect(Unit) {
 
      viewModel.setTempUnit(unit)
-        if(location?.longitude==0.0&&location.latitude==0.0){
+        if(MyObj==""){
             if(isGpsSelected){
 
 
@@ -67,7 +74,7 @@ fun HomeScreen(viewModel: HomeViewModel,location: FavoriteLocation?){
             }
         }
         else{
-            viewModel.getResponses(longitude = location?.longitude!!, latitude = location.latitude)
+            viewModel.getResponses(longitude = (MyObj as FavWeatherDetails).favoriteLocation.longitude, latitude =  (MyObj as FavWeatherDetails).favoriteLocation.latitude)
         }
      while (true) {
          delay(60000) // Update every second (adjust as needed)
@@ -85,123 +92,34 @@ fun HomeScreen(viewModel: HomeViewModel,location: FavoriteLocation?){
 
 
     ){
-        if(currentWeatherResponse.value is Response.Loading){
+        if(currentWeatherResponse.value is Response.Loading||hoursResponse.value is Response.Loading){
             CircularProgressIndicator(
                 modifier = Modifier
                     .fillMaxSize()
                     .wrapContentSize(align = Alignment.Center),color = Color.White
             )
         }
-        else{
+        else if (currentWeatherResponse.value is Response.CurrentWeatherSuccess&&hoursResponse.value is Response.HoursOrDaysSuccess){
             val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
-            Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,){
-                Column(Modifier.padding(top = 16.dp))  {
-                    Row {   Text(text = " ${currentWeather.name?:""}, ${currentWeather.sys?.country}", color = Color.White , fontSize = 22.sp,
-                        modifier = Modifier.padding(bottom = 16.dp, end = 8.dp))
-                    Image(painter = painterResource(R.drawable.location),
-                        contentDescription = "",Modifier.size(24.dp))
-                    }
-                    Row {
-                        Text(
-
-                            text = stringResource(R.string.feels_like) +" ${currentWeather.main?.feels_like}",
-                            style = MaterialTheme.typography.headlineSmall, color = Color.White
-                            , fontSize = 16.sp
-                        )
-                       TempUnitText(unit = unit, topPadding = 4)
-                    }
-
-               }
-
-                Column(Modifier.padding(top = 16.dp)) {
-                    Row{
-                    Text(text = stringResource(R.string.today), color = Color.White , fontSize = 22.sp,
-                        modifier = Modifier.padding(bottom = 16.dp, end = 8.dp))
-                        Image(painter = painterResource(R.drawable.clock),
-                            contentDescription = "",Modifier.size(23.dp))}
-                    Text(
-                        text = date.value?:"",
-                        style = MaterialTheme.typography.headlineSmall, color = Color.White
-                        , fontSize = 16.sp
-                    )
-                }
-            }
-
-
-            Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment =  Alignment.CenterHorizontally) {
-                Image(painter = painterResource( R.drawable.cloudy_sunny), contentDescription = "",Modifier.size(150.dp))
-                Row(Modifier.padding(top = 16.dp)) {
-                    Text(
-                        text = currentWeather.main?.temp.toString(),
-                        style = MaterialTheme.typography.headlineLarge, color = Color.White
-                        , fontSize = 43.sp
-                    )
-                    TempUnitText(unit, fontSize = 22, circleSize = 40, startPadding = 8, topPadding = 8)
-                }
-                Text(
-                    text = currentWeather.weather?.get(0)?.description ?: "",
-                    style = MaterialTheme.typography.headlineLarge, color = Color.White
-                    , fontSize = 26.sp, modifier = Modifier.padding(bottom = 16.dp)
-                )
-                Row (Modifier
-                    .fillMaxWidth()
-                    .background(color = MyColors.secondary.color, shape = RoundedCornerShape(20.dp))
-                    .padding(vertical = 16.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween){
-                    Column {
-
-                         DetailedRow(0,R.drawable.cloud,
-                             " : ","${currentWeather.clouds?.all.toString()}%")
-                      DetailedRow(8,R.drawable.pressure,
-                         " : ","${currentWeather.main?.pressure.toString()}"+ stringResource(R.string.hpa)
-                      )
-
-                    }
-
-                    Column{
-                        //${stringResource(R.string.wind_speed)}
-
-                        DetailedRow(0,R.drawable.wind,"  : "
-                            ,"${currentWeather.wind?.speed.toString()} $unitSpeed")
-
-                         DetailedRow(8,R.drawable.humidity, " : ","${currentWeather.main?.humidity.toString()}%")
-
-                    }
-                }
-
-
-
-            }
-            if(hoursResponse.value is Response.HoursOrDaysSuccess){
-                val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
-
-            Text(stringResource(R.string.upcoming_hourly_temperatures), color = Color.White, modifier = Modifier.padding(top = 32.dp), fontSize = 18.sp)
-            LazyRow (Modifier.padding(top = 16.dp)){
-                items(hoursList.size){
-                        currentIndex->
-                    val obj= hoursList.get(currentIndex)
-                    HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = obj.main?.temp.toString(),unit)
-
-
-
-
-                }
-            }}
-            if(daysResponse.value is Response.HoursOrDaysSuccess){
+            val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
             val daysList= (daysResponse.value as Response.HoursOrDaysSuccess).data
-
-          Row(Modifier
-              .fillMaxWidth()
-              .padding(top = 32.dp, end = 16.dp, start = 8.dp), horizontalArrangement = Arrangement.SpaceBetween,) {
-              Text(stringResource(R.string.upcoming_daily_temperatures), color = Color.White, fontSize = 18.sp)
-          Image(painter = painterResource(R.drawable.calendar), contentDescription = "",Modifier.size(20.dp))
-          }
-            Column (Modifier.padding(top = 8.dp)){
-                daysList.forEach {
-                        currentObj->
-
-                    DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = currentObj.main?.temp.toString(),unit)
-                }
+            MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date)
             }
+
+        else{
+            if(MyObj==""){
+            Text(text = "Error", color = Color.White)}
+            else{
+                Log.i("TAG", "HomeScreen: ${MyObj.toString()}")
+                LaunchedEffect(Unit){viewModel.handleResponses(MyObj as FavWeatherDetails)}
+          if(currentWeatherResponse.value is Response.CurrentWeatherSuccess&&hoursResponse.value is Response.HoursOrDaysSuccess){
+                val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
+                val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
+                val daysList= (daysResponse.value as Response.HoursOrDaysSuccess).data
+                MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date)}
+                else{
+              CircularProgressIndicator()
+          }
             }
         }
     }
@@ -291,5 +209,124 @@ fun TempUnitText(unit :String,fontSize: Int=16,circleSize :Int=22,topPadding: In
         Text(text = "\u00B0", color = Color.White, fontSize = circleSize.sp, modifier = Modifier.padding(start = startPadding.dp))
         Text(text = stringResource(R.string.k), color = Color.White, fontSize = fontSize.sp, modifier = Modifier.padding(top = topPadding.dp))
 
+    }
+}
+@ExperimentalGlideComposeApi
+@Composable
+fun MyUi(
+    currentWeather:CurrentWeatherResponse,
+    hoursList:List<CurrentWeatherResponse>,
+    daysList:List<CurrentWeatherResponse>,
+    unit:String,
+    unitSpeed:String,
+    date: State<String?>
+){
+    Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,){
+        Column(Modifier.padding(top = 16.dp))  {
+            Row {   Text(text = " ${currentWeather.name?:""}, ${currentWeather.sys?.country}", color = Color.White , fontSize = 22.sp,
+                modifier = Modifier.padding(bottom = 16.dp, end = 8.dp))
+                Image(painter = painterResource(R.drawable.location),
+                    contentDescription = "",Modifier.size(24.dp))
+            }
+            Row {
+                Text(
+
+                    text = stringResource(R.string.feels_like) +" ${currentWeather.main?.feels_like}",
+                    style = MaterialTheme.typography.headlineSmall, color = Color.White
+                    , fontSize = 16.sp
+                )
+                TempUnitText(unit = unit, topPadding = 4)
+            }
+
+        }
+
+        Column(Modifier.padding(top = 16.dp)) {
+            Row{
+                Text(text = stringResource(R.string.today), color = Color.White , fontSize = 22.sp,
+                    modifier = Modifier.padding(bottom = 16.dp, end = 8.dp))
+                Image(painter = painterResource(R.drawable.clock),
+                    contentDescription = "",Modifier.size(23.dp))}
+            Text(
+                text = date.value?:"",
+                style = MaterialTheme.typography.headlineSmall, color = Color.White
+                , fontSize = 16.sp
+            )
+        }
+    }
+
+
+    Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment =  Alignment.CenterHorizontally) {
+        Image(painter = painterResource( R.drawable.cloudy_sunny), contentDescription = "",Modifier.size(150.dp))
+        Row(Modifier.padding(top = 16.dp)) {
+            Text(
+                text = currentWeather.main?.temp.toString(),
+                style = MaterialTheme.typography.headlineLarge, color = Color.White
+                , fontSize = 43.sp
+            )
+            TempUnitText(unit, fontSize = 22, circleSize = 40, startPadding = 8, topPadding = 8)
+        }
+        Text(
+            text = currentWeather.weather?.get(0)?.description ?: "",
+            style = MaterialTheme.typography.headlineLarge, color = Color.White
+            , fontSize = 26.sp, modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Row (Modifier
+            .fillMaxWidth()
+            .background(color = MyColors.secondary.color, shape = RoundedCornerShape(20.dp))
+            .padding(vertical = 16.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween){
+            Column {
+
+                DetailedRow(0,R.drawable.cloud,
+                    " : ","${currentWeather.clouds?.all.toString()}%")
+                DetailedRow(8,R.drawable.pressure,
+                    " : ","${currentWeather.main?.pressure.toString()}"+ stringResource(R.string.hpa)
+                )
+
+            }
+
+            Column{
+                //${stringResource(R.string.wind_speed)}
+
+                DetailedRow(0,R.drawable.wind,"  : "
+                    ,"${currentWeather.wind?.speed.toString()} $unitSpeed")
+
+                DetailedRow(8,R.drawable.humidity, " : ","${currentWeather.main?.humidity.toString()}%")
+
+            }
+        }
+
+
+
+    }
+
+
+
+    Text(stringResource(R.string.upcoming_hourly_temperatures), color = Color.White, modifier = Modifier.padding(top = 32.dp), fontSize = 18.sp)
+    LazyRow (Modifier.padding(top = 16.dp)){
+        items(hoursList.size){
+                currentIndex->
+            val obj= hoursList.get(currentIndex)
+            HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = obj.main?.temp.toString(),unit)
+
+
+
+
+        }
+    }
+
+
+
+    Row(Modifier
+        .fillMaxWidth()
+        .padding(top = 32.dp, end = 16.dp, start = 8.dp), horizontalArrangement = Arrangement.SpaceBetween,) {
+        Text(stringResource(R.string.upcoming_daily_temperatures), color = Color.White, fontSize = 18.sp)
+        Image(painter = painterResource(R.drawable.calendar), contentDescription = "",Modifier.size(20.dp))
+    }
+    Column (Modifier.padding(top = 8.dp)){
+        daysList.forEach {
+                currentObj->
+
+            DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = currentObj.main?.temp.toString(),unit)
+        }
     }
 }

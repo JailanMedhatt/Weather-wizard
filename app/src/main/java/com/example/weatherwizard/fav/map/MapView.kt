@@ -36,6 +36,7 @@ import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
 import com.example.weatherwizard.R
 import com.example.weatherwizard.Repository
+import com.example.weatherwizard.SharedPref
 import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.data.model.FavoriteLocation
@@ -69,7 +70,7 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
     val mapScreenFactory = MapScreenViewModel.MapScreenViewModelFactory(
         placesClient = placesClient,
         repository = Repository.getInstance(
-            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao())
+            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao(),AppDb.getInstance(context).getAlertDao())
 //            WeatherLocalDataSource(WeatherDatabase.getInstance(context).getWeatherDao())
         )
     )
@@ -176,7 +177,8 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
                                viewModel.selectUserLocation(favouriteLocation,context,popBackStack)
                            }
                            else{
-                                  viewModel.insertFavouriteLocation(favouriteLocation)}
+                               val sharedPref= SharedPref.getInstance(context)
+                                  viewModel.insertFavouriteLocation(favouriteLocation,sharedPref.getLanguage()?:"en",sharedPref.getTempUnit()?:"metric")}
                                  }
                         ,
                         colors = ButtonDefaults.buttonColors(primary),

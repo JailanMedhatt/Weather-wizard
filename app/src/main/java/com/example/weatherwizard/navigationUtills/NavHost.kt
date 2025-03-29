@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.example.weatherwizard.data.model.FavoriteLocation
+import com.example.weatherwizard.alert.view.AlertScreen
 import com.example.weatherwizard.fav.map.MapScreen
 import com.example.weatherwizard.fav.view.FavouriteScreen
 import com.example.weatherwizard.home.view.HomeScreen
@@ -20,23 +20,18 @@ import com.example.weatherwizard.settings.view.SettingScreen
 @Composable
 fun MyNavHost(myNavController: NavHostController,homeViewMode:HomeViewModel,snackBarHostState: SnackbarHostState){
   // val myNavController = rememberNavController()
-    NavHost(navController =myNavController, startDestination = ScreenRoute.HomeRoute(0.0,0.0)){
+    NavHost(navController =myNavController, startDestination = ScreenRoute.HomeRoute(0.0,0.0,"{}"),){
      composable<ScreenRoute.HomeRoute> {
                    backStackEntry -> val args:ScreenRoute.HomeRoute = backStackEntry.toRoute()
          Log.i("tag", "${args.latitude} ${args.longitude} ")
-         HomeScreen(homeViewMode, FavoriteLocation(args.longitude?:0.0,args.latitude?:0.0,""))
-         //RegisterUi(navigateToLogin = {email,pass-> myNavController.navigate(ScreenRoute.LoginRoute(email,pass))}
-        // )
-     }
+         HomeScreen(homeViewMode,args.weatherObj)
+                                    }
         composable<ScreenRoute.FavRoute> {
-            FavouriteScreen(onNavigateToMap = {myNavController.navigate(ScreenRoute.MapRoute(false))},snackBarHostState,onNavigateToHome = {location->myNavController.navigate(ScreenRoute.HomeRoute(location.longitude,location.latitude))})
-//           backStackEntry -> val args:ScreenRoute.LoginRoute = backStackEntry.toRoute()
-//            LoginUi(enteredEmail = args.name, enteredPass = args.pass,
-//                navigatetoHome = {email-> myNavController.navigate(ScreenRoute.HomeRoute(email))})
+            FavouriteScreen(onNavigateToMap = {myNavController.navigate(ScreenRoute.MapRoute(false))},snackBarHostState,
+                onNavigateToHome = {location,obj->myNavController.navigate(ScreenRoute.HomeRoute(location.longitude,location.latitude,obj))})
+
         }
        composable<ScreenRoute.SettingsRoute> {
-//                backStackEntry -> val args:ScreenRoute.HomeRoute = backStackEntry.toRoute()
-//          HomeUi(args.name)
            SettingScreen(onNavigateToMap = {myNavController.navigate(ScreenRoute.MapRoute(true))})
         }
         composable<ScreenRoute.MapRoute> {
@@ -44,6 +39,10 @@ fun MyNavHost(myNavController: NavHostController,homeViewMode:HomeViewModel,snac
             MapScreen(snackBarHostState,args.fromSettings,popBackStack = {myNavController.popBackStack()})
         }
 
+       composable<ScreenRoute.AlertRoute> {
+           AlertScreen()
+
+           }
     }
 }
 

@@ -27,7 +27,7 @@ fun navBar(navController: NavHostController){
         NavigationItem(
             title = stringResource(R.string.home),
             icon = Icons.Default.Home,
-            route = ScreenRoute.HomeRoute(0.0,0.0)
+            route = ScreenRoute.HomeRoute(0.0,0.0,"{}")
         ),
         NavigationItem(
             title = stringResource(R.string.favourite),
@@ -43,7 +43,8 @@ fun navBar(navController: NavHostController){
             title = stringResource(R.string.setting),
             icon = Icons.Default.Settings,
             route = ScreenRoute.SettingsRoute
-        )
+        ),
+
     )
     val selectedNavigationIndex = rememberSaveable {
         mutableIntStateOf(0)
@@ -87,7 +88,7 @@ fun navBarP(){
         NavigationItem(
             title = stringResource(R.string.home),
             icon = Icons.Default.Home,
-            route = ScreenRoute.HomeRoute(0.0,0.0)
+            route = ScreenRoute.HomeRoute(0.0,0.0,"{}")
         ),
         NavigationItem(
             title = stringResource(R.string.favourite),

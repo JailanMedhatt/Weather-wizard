@@ -2,6 +2,7 @@ package com.example.weatherwizard.fav.viewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.Repository
 import com.example.weatherwizard.data.model.FavoriteLocation
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,16 +14,16 @@ import kotlinx.coroutines.launch
 class FavouriteViewModel(val repository: Repository) : ViewModel()  {
     private val mutableMessage = MutableSharedFlow<String>()
     val message = mutableMessage.asSharedFlow()
-    private var mutableLocations = MutableStateFlow<List<FavoriteLocation>>(emptyList())
+    private var mutableLocations = MutableStateFlow<List<FavWeatherDetails>>(emptyList())
     val locations = mutableLocations.asStateFlow()
-    var deletedLocation:FavoriteLocation?=null
+    var deletedLocation:FavWeatherDetails?=null
     class FavouriteViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory
     {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return FavouriteViewModel(repository) as T
         }
     }
-    fun deleteFavouriteLocation(location: FavoriteLocation) {
+    fun deleteFavouriteLocation(location: FavWeatherDetails) {
         viewModelScope.launch {
             deletedLocation=location
         repository.deleteLocation(location)

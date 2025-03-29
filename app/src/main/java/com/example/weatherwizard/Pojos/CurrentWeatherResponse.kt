@@ -1,7 +1,10 @@
 package com.example.weatherwizard.Pojos
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CurrentWeatherResponse(
-    var base: String?,
+    var base: String?="",
     var clouds: Clouds?,
     var cod: Int?,
     var coord: Coord?,

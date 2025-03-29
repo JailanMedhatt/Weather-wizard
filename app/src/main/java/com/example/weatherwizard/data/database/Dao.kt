@@ -5,15 +5,35 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Delete
-import com.example.weatherwizard.data.model.FavoriteLocation
+import com.example.weatherwizard.Pojos.FavWeatherDetails
+import com.example.weatherwizard.alert.model.AlertModel
 import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocationDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertLocation(location: FavoriteLocation)
+//    @Insert(onConflict = OnConflictStrategy.IGNORE)
+//    suspend fun insertLocation(location: FavoriteLocation)
+//    @Query("SELECT * FROM location_table")
+//     fun getLocations(): Flow<List<FavoriteLocation>>
+//    @Delete
+//    suspend fun deleteLocation(product: FavoriteLocation)
+    @Insert
+    suspend fun insertFavLocationDetails(favWeatherDetails: FavWeatherDetails)
     @Query("SELECT * FROM location_table")
-     fun getLocations(): Flow<List<FavoriteLocation>>
+    fun getFavLocations(): Flow<List<FavWeatherDetails>>
     @Delete
-    suspend fun deleteLocation(product: FavoriteLocation)
+    suspend fun deleteLocation(favWeatherDetails: FavWeatherDetails)
+
+
+
+}
+@Dao
+interface AlertDao{
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertAlert(alert: AlertModel)
+    @Query("SELECT * FROM alerts")
+    fun getAlerts(): Flow<List<AlertModel>>
+    @Delete
+    suspend fun deleteAlert(alert: AlertModel)
+
 
 }

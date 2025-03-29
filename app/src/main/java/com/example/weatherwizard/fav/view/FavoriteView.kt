@@ -36,6 +36,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
+import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.R
 import com.example.weatherwizard.Repository
 import com.example.weatherwizard.data.database.AppDb
@@ -43,13 +44,14 @@ import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.fav.viewModel.FavouriteViewModel
 import com.example.weatherwizard.ui.theme.secondary
+import kotlinx.serialization.json.Json
 
 @Composable
-fun FavouriteScreen(onNavigateToMap:()->Unit, snackBarHostState: SnackbarHostState,onNavigateToHome:(location:FavoriteLocation)->Unit){
+fun FavouriteScreen(onNavigateToMap:()->Unit, snackBarHostState: SnackbarHostState,onNavigateToHome:(location:FavoriteLocation,obj:String)->Unit){
     val context = LocalContext.current
     val FavFactory = FavouriteViewModel.FavouriteViewModelFactory(
         repository = Repository.getInstance(
-            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao())
+            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao(),AppDb.getInstance(context).getAlertDao())
 
         )
     )
@@ -89,22 +91,25 @@ LaunchedEffect (Unit){
 }
 
 @Composable
-fun LocationCard(action :(FavoriteLocation)->Unit,location: FavoriteLocation,onNavigateToHome:(location:FavoriteLocation)->Unit){
+fun LocationCard(action :(FavoriteLocation)->Unit,location: FavWeatherDetails,onNavigateToHome:(location:FavoriteLocation,obj:String)->Unit){
     Row (Modifier
         .fillMaxWidth()
         .padding(16.dp)
         .background(secondary, shape = RoundedCornerShape(16.dp))
         .padding(vertical = 32.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween){
-        Text(text = location.address, color = Color.White, fontSize = 22.sp,
+        Text(text = location.favoriteLocation.address, color = Color.White, fontSize = 22.sp,
             modifier = Modifier.padding(top=8.dp))
         Row{
-        Button(onClick = {  action.invoke(location)},
+        Button(onClick = {  action.invoke(location.favoriteLocation)},
             colors = ButtonDefaults.buttonColors(
             containerColor = MyColors.primary.color
         ), shape = RoundedCornerShape(12.dp)) {
             Text(stringResource(R.string.delete),fontSize = 18.sp)
         }
-        IconButton(onClick = { onNavigateToHome(location)}) {
+        IconButton(onClick = {
+            val weatherJson = Json.encodeToString(location)
+
+            onNavigateToHome(location.favoriteLocation,weatherJson)}) {
             Icon(
                 imageVector = Icons.Default.ArrowForward,
                 contentDescription = "Favorite",
