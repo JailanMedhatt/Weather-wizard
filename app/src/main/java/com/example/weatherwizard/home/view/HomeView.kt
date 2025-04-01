@@ -38,7 +38,6 @@ import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.R
 import com.example.weatherwizard.Response
 import com.example.weatherwizard.SharedPref
-import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
@@ -61,20 +60,26 @@ fun HomeScreen(viewModel: HomeViewModel,obj: String){
 
      viewModel.setTempUnit(unit)
         if(MyObj==""){
+
             if(isGpsSelected){
+                sharedPref.setLongitudeAndLatitude(viewModel.locationState.value.longitude, viewModel.locationState.value.latitude)
 
 
      while (viewModel.locationState.value.latitude == 0.0 && viewModel.locationState.value.longitude == 0.0) {
          delay(500) // Wait for location updates
      }
-        viewModel.getResponses(0.0,0.0)}
+        viewModel.getResponses(0.0, 0.0, true)}
             else{
                 val pair = sharedPref.getLatitudeAndLongitude()
-                viewModel.getResponses(latitude = pair.first, longitude = pair.second)
+                viewModel.getResponses(
+                    longitude = pair.second,
+                    latitude = pair.first,
+                    fromHome = true
+                )
             }
         }
         else{
-            viewModel.getResponses(longitude = (MyObj as FavWeatherDetails).favoriteLocation.longitude, latitude =  (MyObj as FavWeatherDetails).favoriteLocation.latitude)
+            viewModel.getResponses(longitude = (MyObj as FavWeatherDetails).favoriteLocation.longitude, latitude =  (MyObj as FavWeatherDetails).favoriteLocation.latitude,fromHome=false)
         }
      while (true) {
          delay(60000) // Update every second (adjust as needed)
@@ -108,10 +113,30 @@ fun HomeScreen(viewModel: HomeViewModel,obj: String){
 
         else{
             if(MyObj==""){
-            Text(text = "Error", color = Color.White)}
+                LaunchedEffect(Unit) {
+                    viewModel.getDetails()
+                }
+                if(currentWeatherResponse.value is Response.CurrentWeatherSuccess&&hoursResponse.value is Response.HoursOrDaysSuccess){
+                    val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
+                    val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
+                    val daysList= (daysResponse.value as Response.HoursOrDaysSuccess).data
+                    MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date)}
+                  else if(currentWeatherResponse.value is Response.Error&&hoursResponse.value is Response.Error){
+                    Log.i("Tag", "HomeScreen:${(currentWeatherResponse.value as Response.Error).message} ")
+
+                    Text(text = (currentWeatherResponse.value as Response.Error).message, modifier = Modifier.padding(top = 16.dp), color = Color.White)
+                }
+                else {
+                    CircularProgressIndicator()
+                }
+
+
+            }
             else{
                 Log.i("TAG", "HomeScreen: ${MyObj.toString()}")
-                LaunchedEffect(Unit){viewModel.handleResponses(MyObj as FavWeatherDetails)}
+                LaunchedEffect(Unit){
+                    viewModel.handleResponses(MyObj as FavWeatherDetails)
+                }
           if(currentWeatherResponse.value is Response.CurrentWeatherSuccess&&hoursResponse.value is Response.HoursOrDaysSuccess){
                 val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
                 val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
@@ -131,7 +156,6 @@ fun DetailedRow(topPadding :Int, icon:Int,description:String,value:String){
         Text(text = description,color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 16.sp)
         Text(text = value,color = Color.White, modifier = Modifier.padding(top = 8.dp), fontSize = 16.sp)
     }
-
 }
 
 @ExperimentalGlideComposeApi
@@ -294,12 +318,7 @@ fun MyUi(
 
             }
         }
-
-
-
     }
-
-
 
     Text(stringResource(R.string.upcoming_hourly_temperatures), color = Color.White, modifier = Modifier.padding(top = 32.dp), fontSize = 18.sp)
     LazyRow (Modifier.padding(top = 16.dp)){
@@ -307,8 +326,6 @@ fun MyUi(
                 currentIndex->
             val obj= hoursList.get(currentIndex)
             HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = obj.main?.temp.toString(),unit)
-
-
 
 
         }

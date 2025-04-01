@@ -1,6 +1,5 @@
 package com.example.weatherwizard.fav.map
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +18,6 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
 import com.example.weatherwizard.R
@@ -41,7 +38,7 @@ import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.getAddressFromLocation
-import com.example.weatherwizard.ui.theme.primary
+import com.example.weatherwizard.ui.theme.DarkPrimary
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -70,7 +67,7 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
     val mapScreenFactory = MapScreenViewModel.MapScreenViewModelFactory(
         placesClient = placesClient,
         repository = Repository.getInstance(
-            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao(),AppDb.getInstance(context).getAlertDao())
+            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao(),AppDb.getInstance(context).getAlertDao(),AppDb.getInstance(context).getHomeDao())
 //            WeatherLocalDataSource(WeatherDatabase.getInstance(context).getWeatherDao())
         )
     )
@@ -181,7 +178,7 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
                                   viewModel.insertFavouriteLocation(favouriteLocation,sharedPref.getLanguage()?:"en",sharedPref.getTempUnit()?:"metric")}
                                  }
                         ,
-                        colors = ButtonDefaults.buttonColors(primary),
+                        colors = ButtonDefaults.buttonColors(DarkPrimary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {

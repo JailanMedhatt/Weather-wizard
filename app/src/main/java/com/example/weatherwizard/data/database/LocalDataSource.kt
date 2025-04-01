@@ -2,18 +2,10 @@ package com.example.weatherwizard.data.database
 
 import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.alert.model.AlertModel
+import com.example.weatherwizard.home.model.DetailsModel
 import kotlinx.coroutines.flow.Flow
 
-class LocalDataSource(val dao: LocationDao, val alertDao: AlertDao)  {
-//    suspend fun insertLocation(location: FavoriteLocation) {
-//      return  dao.insertLocation(location)
-//    }
-//    fun getLocations(): Flow<List<FavoriteLocation>> {
-//        return dao.getLocations()
-//    }
-//    suspend fun deleteLocation(location: FavoriteLocation) {
-//        return dao.deleteLocation(location)
-//}
+class LocalDataSource(val dao: LocationDao, val alertDao: AlertDao, val homeDao: HomeDao)  {
     suspend fun insertLocation(location: FavWeatherDetails) {
         return dao.insertFavLocationDetails(location)
     }
@@ -34,5 +26,15 @@ class LocalDataSource(val dao: LocationDao, val alertDao: AlertDao)  {
     suspend fun deleteAlert(alert: AlertModel) {
         return alertDao.deleteAlert(alert)
     }
+    suspend fun insertDetails(detailsModel: DetailsModel) {
+        return homeDao.insertDetails(detailsModel)
+    }
+    fun getDetails(): Flow<List<DetailsModel>> {
+        return homeDao.getDetails()}
+    suspend fun deleteDetails(detailsModel: DetailsModel) {
+        return homeDao.deleteDetails(detailsModel)
+    }
+
+
 
 }

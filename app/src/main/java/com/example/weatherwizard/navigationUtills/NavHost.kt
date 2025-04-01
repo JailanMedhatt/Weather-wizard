@@ -1,5 +1,4 @@
 package com.example.weatherwizard.navigationUtills
-
 import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
@@ -14,8 +13,6 @@ import com.example.weatherwizard.fav.view.FavouriteScreen
 import com.example.weatherwizard.home.view.HomeScreen
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import com.example.weatherwizard.settings.view.SettingScreen
-
-
 @ExperimentalGlideComposeApi
 @Composable
 fun MyNavHost(myNavController: NavHostController,homeViewMode:HomeViewModel,snackBarHostState: SnackbarHostState){

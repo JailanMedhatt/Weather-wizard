@@ -25,7 +25,6 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -42,8 +41,8 @@ import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import com.example.weatherwizard.navigationUtills.MyNavHost
 import com.example.weatherwizard.navigationUtills.navBar
-import com.example.weatherwizard.ui.theme.primary
-import com.google.android.gms.location.FusedLocationProviderClient
+import com.example.weatherwizard.ui.theme.DarkPrimary
+import com.example.weatherwizard.ui.theme.darkGradient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -59,7 +58,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(Repository.getInstance(
             RemoteDataSource(RetrofitHelper.retrofitInstance),
-            LocalDataSource(AppDb.getInstance(this).getDao(),AppDb.getInstance(this).getAlertDao())
+            LocalDataSource(AppDb.getInstance(this).getDao(),AppDb.getInstance(this).getAlertDao(),AppDb.getInstance(this).getHomeDao())
         ))).
         get(HomeViewModel::class.java)
         applySavedLanguage(this)
@@ -105,14 +104,14 @@ class MainActivity : ComponentActivity() {
     fun MainScreen() {
 
         val snackBarHostState = remember { SnackbarHostState() }
-        val gradient = Brush.verticalGradient(colors =
-        listOf(Color(0xFF08244F),Color(0xFF134CB5),
-            Color(0xFF0B42AB)))
+//        val gradient = Brush.verticalGradient(colors =
+//        listOf(Color(0xFF08244F),Color(0xFF134CB5),
+//            Color(0xFF0B42AB)))
 
         val navController = rememberNavController()
         Box (modifier = Modifier
             .fillMaxSize()
-            .background(gradient)){
+            .background(darkGradient)){
         Scaffold(
             containerColor = Color.Transparent,
             modifier = Modifier
@@ -124,7 +123,7 @@ class MainActivity : ComponentActivity() {
                     Snackbar(
                         snackbarData = data,
                         contentColor = Color.Black, // Custom text color
-                        actionColor = primary // Custom action label color,
+                        actionColor = DarkPrimary // Custom action label color,
 ,                        containerColor = Color.White// Custom background color
                     )
                 }

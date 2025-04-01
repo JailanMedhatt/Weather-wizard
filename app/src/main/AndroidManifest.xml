@@ -5,6 +5,8 @@
     <!-- Permissions for Location Access -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -16,6 +18,8 @@
         android:theme="@style/Theme.WeatherWizard"
         android:name=".MyApplication"
         tools:targetApi="31">
+        <receiver android:name=".NotificationDismissReceiver" />
+        <receiver android:name=".NotificationNavigateReceiver" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -30,7 +34,7 @@
         </activity>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCaj10hgcwGaosoYRyv79ppLviFJ9eMNmM" />
+            android:value="AIzaSyCrz8arZ9O88eZgIHCNnHv-fBTv93nlggg" />
     </application>
 
 </manifest>

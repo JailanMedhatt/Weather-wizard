@@ -5,6 +5,7 @@ import com.example.weatherwizard.Pojos.CurrentWeatherResponse
 import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.alert.model.AlertModel
 import com.example.weatherwizard.data.database.LocalDataSource
+import com.example.weatherwizard.home.model.DetailsModel
 import kotlinx.coroutines.flow.Flow
 
 class Repository private constructor(val remoteDataSource: RemoteDataSource,val localDataSource: LocalDataSource){
@@ -30,6 +31,14 @@ class Repository private constructor(val remoteDataSource: RemoteDataSource,val 
         return localDataSource.getAlerts()}
     suspend fun deleteAlert(alert: AlertModel) {
         localDataSource.deleteAlert(alert)
+    }
+    suspend fun insertDetails(detailsModel: DetailsModel) {
+        localDataSource.insertDetails(detailsModel)
+    }
+    fun getDetails(): Flow<List<DetailsModel>> {
+        return localDataSource.getDetails()}
+    suspend fun deleteDetails(detailsModel: DetailsModel) {
+        localDataSource.deleteDetails(detailsModel)
     }
 
 

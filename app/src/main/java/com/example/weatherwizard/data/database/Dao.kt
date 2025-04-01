@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Delete
 import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.alert.model.AlertModel
+import com.example.weatherwizard.home.model.DetailsModel
 import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocationDao {
@@ -34,6 +35,17 @@ interface AlertDao{
     fun getAlerts(): Flow<List<AlertModel>>
     @Delete
     suspend fun deleteAlert(alert: AlertModel)
+
+
+}
+@Dao
+interface HomeDao{
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDetails(detailsModel: DetailsModel)
+    @Query("SELECT * FROM home_table")
+    fun getDetails(): Flow<List<DetailsModel>>
+    @Delete
+    suspend fun deleteDetails(detailsModel: DetailsModel)
 
 
 }

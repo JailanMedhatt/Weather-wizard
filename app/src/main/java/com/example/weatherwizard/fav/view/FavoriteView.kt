@@ -43,7 +43,7 @@ import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.fav.viewModel.FavouriteViewModel
-import com.example.weatherwizard.ui.theme.secondary
+import com.example.weatherwizard.ui.theme.darkSecondary
 import kotlinx.serialization.json.Json
 
 @Composable
@@ -51,7 +51,7 @@ fun FavouriteScreen(onNavigateToMap:()->Unit, snackBarHostState: SnackbarHostSta
     val context = LocalContext.current
     val FavFactory = FavouriteViewModel.FavouriteViewModelFactory(
         repository = Repository.getInstance(
-            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao(),AppDb.getInstance(context).getAlertDao())
+            RemoteDataSource(RetrofitHelper.retrofitInstance), LocalDataSource(AppDb.getInstance(context).getDao(),AppDb.getInstance(context).getAlertDao(),AppDb.getInstance(context).getHomeDao())
 
         )
     )
@@ -95,7 +95,7 @@ fun LocationCard(action :(FavoriteLocation)->Unit,location: FavWeatherDetails,on
     Row (Modifier
         .fillMaxWidth()
         .padding(16.dp)
-        .background(secondary, shape = RoundedCornerShape(16.dp))
+        .background(darkSecondary, shape = RoundedCornerShape(16.dp))
         .padding(vertical = 32.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween){
         Text(text = location.favoriteLocation.address, color = Color.White, fontSize = 22.sp,
             modifier = Modifier.padding(top=8.dp))
@@ -123,7 +123,7 @@ fun LocationCardPreview(){
     Row (Modifier
         .fillMaxWidth()
         .padding(16.dp)
-        .background(secondary, shape = RoundedCornerShape(16.dp))
+        .background(darkSecondary, shape = RoundedCornerShape(16.dp))
         .padding(32.dp), horizontalArrangement = Arrangement.SpaceBetween){
          Text(text = "Place", color = Color.White, fontSize = 22.sp,
              modifier = Modifier.padding(top=8.dp))

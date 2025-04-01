@@ -93,4 +93,7 @@ dependencies {
     //Google Places API and Jetpack Compose support for Places
     implementation("com.google.android.libraries.places:places:3.1.0")
     implementation("com.google.maps.android:places-compose:0.1.2")
+    //
+        implementation( "androidx.core:core-ktx:1.9.0")
+
 }
