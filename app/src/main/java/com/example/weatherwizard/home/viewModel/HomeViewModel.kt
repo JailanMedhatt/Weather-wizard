@@ -169,6 +169,11 @@ class HomeViewModel(private val repo :Repository):ViewModel() {
                hoursResponse.value=Response.Error("No Data")} }
 
     }
+    fun convertToArabicNumbers(number: String): String {
+        val arabicDigits = arrayOf('٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩')
+        return number.map { if (it.isDigit()) arabicDigits[it.digitToInt()] else it }.joinToString("")
+    }
+
 
     class MyFactory(private val repo: Repository) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {

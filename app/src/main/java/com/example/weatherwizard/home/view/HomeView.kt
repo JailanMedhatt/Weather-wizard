@@ -30,9 +30,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.Pojos.CurrentWeatherResponse
 import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.R
@@ -50,9 +50,9 @@ fun HomeScreen(viewModel: HomeViewModel,obj: String){
     val unit=sharedPref.getTempUnit()?:"metric"
     var unitSpeed=sharedPref.getWindSpeedUnit()?:"Meter/Sec"
     val isGpsSelected = sharedPref.getGpsSelected()
-
+      val language=sharedPref.getLanguage()?:"en"
     val MyObj = if(obj!="{}") Json.decodeFromString<FavWeatherDetails>(obj) else ""
-    if(sharedPref.getLanguage()=="ar"){
+    if(language=="ar"){
         unitSpeed= if(unitSpeed=="Meter/Sec") "متر/ثانية" else "ميل/ساعة"
 
     }
@@ -108,7 +108,7 @@ fun HomeScreen(viewModel: HomeViewModel,obj: String){
             val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
             val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
             val daysList= (daysResponse.value as Response.HoursOrDaysSuccess).data
-            MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date)
+            MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date,language,viewModel)
             }
 
         else{
@@ -120,7 +120,7 @@ fun HomeScreen(viewModel: HomeViewModel,obj: String){
                     val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
                     val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
                     val daysList= (daysResponse.value as Response.HoursOrDaysSuccess).data
-                    MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date)}
+                    MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date,language,viewModel)}
                   else if(currentWeatherResponse.value is Response.Error&&hoursResponse.value is Response.Error){
                     Log.i("Tag", "HomeScreen:${(currentWeatherResponse.value as Response.Error).message} ")
 
@@ -141,7 +141,7 @@ fun HomeScreen(viewModel: HomeViewModel,obj: String){
                 val currentWeather= (currentWeatherResponse.value as Response.CurrentWeatherSuccess).data
                 val hoursList= (hoursResponse.value as Response.HoursOrDaysSuccess).data
                 val daysList= (daysResponse.value as Response.HoursOrDaysSuccess).data
-                MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date)}
+                MyUi(currentWeather,hoursList,daysList,unit,unitSpeed,date,language,viewModel)}
                 else{
               CircularProgressIndicator()
           }
@@ -163,7 +163,7 @@ fun DetailedRow(topPadding :Int, icon:Int,description:String,value:String){
 fun HourCard(date:String, icon:String,temp:String, unit:String){
     Column (Modifier
         .padding(end = 32.dp)
-        .background(MyColors.secondary.color, shape = RoundedCornerShape(20.dp))
+        .background( MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(20.dp))
         .padding(vertical = 8.dp, horizontal = 8.dp)
         .wrapContentSize(Alignment.Center))
     {
@@ -194,7 +194,7 @@ fun DayCard(date:String, icon:String,temp:String,unit: String){
     Row (  Modifier
         .padding(bottom = 8.dp)
         .background(
-            MyColors.secondary.color,
+            MaterialTheme.colorScheme.secondary,
             shape = RoundedCornerShape(20.dp)
         )
         .fillMaxWidth()
@@ -243,7 +243,8 @@ fun MyUi(
     daysList:List<CurrentWeatherResponse>,
     unit:String,
     unitSpeed:String,
-    date: State<String?>
+    date: State<String?>,
+    language:String,viewModel: HomeViewModel
 ){
     Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,){
         Column(Modifier.padding(top = 16.dp))  {
@@ -255,7 +256,13 @@ fun MyUi(
             Row {
                 Text(
 
-                    text = stringResource(R.string.feels_like) +" ${currentWeather.main?.feels_like}",
+                    text = stringResource(R.string.feels_like) ,
+                    style = MaterialTheme.typography.headlineSmall, color = Color.White
+                    , fontSize = 16.sp
+                )
+                Text(
+
+                    text = if(language=="ar") viewModel.convertToArabicNumbers(currentWeather.main?.feels_like.toString()) else "${currentWeather.main?.feels_like}",
                     style = MaterialTheme.typography.headlineSmall, color = Color.White
                     , fontSize = 16.sp
                 )
@@ -283,7 +290,7 @@ fun MyUi(
         Image(painter = painterResource( R.drawable.cloudy_sunny), contentDescription = "",Modifier.size(150.dp))
         Row(Modifier.padding(top = 16.dp)) {
             Text(
-                text = currentWeather.main?.temp.toString(),
+                text = if(language=="ar") viewModel.convertToArabicNumbers(  currentWeather.main?.temp.toString()) else currentWeather.main?.temp.toString(),
                 style = MaterialTheme.typography.headlineLarge, color = Color.White
                 , fontSize = 43.sp
             )
@@ -296,14 +303,14 @@ fun MyUi(
         )
         Row (Modifier
             .fillMaxWidth()
-            .background(color = MyColors.secondary.color, shape = RoundedCornerShape(20.dp))
+            .background(color =  MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(20.dp))
             .padding(vertical = 16.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween){
             Column {
 
                 DetailedRow(0,R.drawable.cloud,
-                    " : ","${currentWeather.clouds?.all.toString()}%")
+                    " : ","${if(language=="ar") viewModel.convertToArabicNumbers(currentWeather.clouds?.all.toString()) else currentWeather.clouds?.all.toString()} % ")
                 DetailedRow(8,R.drawable.pressure,
-                    " : ","${currentWeather.main?.pressure.toString()}"+ stringResource(R.string.hpa)
+                    " : ","${if (language=="ar")viewModel.convertToArabicNumbers(currentWeather.main?.pressure.toString()) else currentWeather.main?.pressure.toString()} "+ stringResource(R.string.hpa)
                 )
 
             }
@@ -312,9 +319,9 @@ fun MyUi(
                 //${stringResource(R.string.wind_speed)}
 
                 DetailedRow(0,R.drawable.wind,"  : "
-                    ,"${currentWeather.wind?.speed.toString()} $unitSpeed")
+                    ,"${if (language=="ar")viewModel.convertToArabicNumbers(currentWeather.wind?.speed.toString()) else currentWeather.wind?.speed.toString()} $unitSpeed")
 
-                DetailedRow(8,R.drawable.humidity, " : ","${currentWeather.main?.humidity.toString()}%")
+                DetailedRow(8,R.drawable.humidity, " : ","${ if (language=="ar")viewModel.convertToArabicNumbers(currentWeather.main?.humidity.toString()) else currentWeather.main?.humidity.toString() } % ")
 
             }
         }
@@ -325,9 +332,7 @@ fun MyUi(
         items(hoursList.size){
                 currentIndex->
             val obj= hoursList.get(currentIndex)
-            HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = obj.main?.temp.toString(),unit)
-
-
+            HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = if(language=="ar") viewModel.convertToArabicNumbers(obj.main?.temp.toString()) else obj.main?.temp.toString(),unit)
         }
     }
 
@@ -343,7 +348,7 @@ fun MyUi(
         daysList.forEach {
                 currentObj->
 
-            DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = currentObj.main?.temp.toString(),unit)
+            DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = if(language=="ar") viewModel.convertToArabicNumbers( currentObj.main?.temp.toString()) else currentObj.main?.temp.toString(),unit)
         }
     }
 }

@@ -60,6 +60,13 @@ fun setTempUnit(tempUnit: String) {
     fun getGpsSelected(): Boolean {
         return sharedPreferences.getBoolean("gpsSelected", true)
     }
+    fun setTheme(theme: String) {
+        editor.putString("theme", theme).apply()
+        editor.commit()
+    }
+    fun getTheme(): String? {
+        return  sharedPreferences.getString("theme", "dark")
+    }
 
 
 

@@ -17,6 +17,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -33,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
 import com.example.weatherwizard.Pojos.FavWeatherDetails
@@ -85,7 +85,7 @@ LaunchedEffect (Unit){
                 .align(Alignment.BottomEnd)
                 .padding(horizontal = 22.dp, vertical = 64.dp), containerColor = Color.White)
         {
-           Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = MyColors.primary.color)
+           Icon(imageVector = Icons.Default.Add, contentDescription = "Add", tint = MaterialTheme.colorScheme.primary)
         }}
 
 }
@@ -102,9 +102,9 @@ fun LocationCard(action :(FavoriteLocation)->Unit,location: FavWeatherDetails,on
         Row{
         Button(onClick = {  action.invoke(location.favoriteLocation)},
             colors = ButtonDefaults.buttonColors(
-            containerColor = MyColors.primary.color
+            containerColor =  MaterialTheme.colorScheme.primary
         ), shape = RoundedCornerShape(12.dp)) {
-            Text(stringResource(R.string.delete),fontSize = 18.sp)
+            Text(stringResource(R.string.delete),fontSize = 18.sp, color = Color.White)
         }
         IconButton(onClick = {
             val weatherJson = Json.encodeToString(location)
@@ -123,12 +123,12 @@ fun LocationCardPreview(){
     Row (Modifier
         .fillMaxWidth()
         .padding(16.dp)
-        .background(darkSecondary, shape = RoundedCornerShape(16.dp))
+        .background( MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(16.dp))
         .padding(32.dp), horizontalArrangement = Arrangement.SpaceBetween){
          Text(text = "Place", color = Color.White, fontSize = 22.sp,
              modifier = Modifier.padding(top=8.dp))
         Button(onClick = {}, colors = ButtonDefaults.buttonColors(
-            containerColor = MyColors.primary.color
+            containerColor =  MaterialTheme.colorScheme.primary
             ), ) {
             Text("Delete")
         }

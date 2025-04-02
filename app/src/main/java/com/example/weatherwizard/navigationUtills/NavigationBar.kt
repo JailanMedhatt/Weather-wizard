@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
-import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.R
 import com.example.weatherwizard.ui.theme.orange
 
@@ -71,7 +70,7 @@ fun navBar(navController: NavHostController){
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color.White,
-                    indicatorColor = MyColors.secondary.color
+                    indicatorColor =  MaterialTheme.colorScheme.secondary
                     , unselectedIconColor = Color.White
                 )
 
@@ -131,7 +130,7 @@ fun navBarP(){
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Color.White,
-                    indicatorColor = MyColors.primary.color
+                    indicatorColor =  MaterialTheme.colorScheme.primary
                     , unselectedIconColor = Color.White
                 )
 

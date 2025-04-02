@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
@@ -25,7 +26,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.R
 import com.example.weatherwizard.SharedPref
 import com.example.weatherwizard.settings.viewModel.SettingsViewModel
@@ -39,6 +39,7 @@ fun SettingScreen(onNavigateToMap:()->Unit){
         val selectedLanguage = remember { mutableStateOf(sharedPref.getLanguage()?:"en") }
         val selectedTempUnit = remember {  mutableStateOf( sharedPref.getTempUnit()?:"metric")}
         val selectedWindSpeedUnit = remember { mutableStateOf(sharedPref.getWindSpeedUnit()?:"Meter/Sec") }
+       val selectedTheme = remember { mutableStateOf(sharedPref.getTheme()?:"Dark") }
         val  isGpsSelcted = remember { mutableStateOf(sharedPref.getGpsSelected()) }
     val selectedLocation = remember { mutableStateOf("Gps") }
     val isArabic = selectedLanguage.value == "ar" || selectedLanguage.value == "العربية"
@@ -48,7 +49,11 @@ fun SettingScreen(onNavigateToMap:()->Unit){
         "imperial", "Fahrenheit", "فهرنهايت" -> if (isArabic) "فهرنهايت" else "Fahrenheit"
         else -> if (isArabic) "كلفن" else "Kelvin"
     }
-
+  selectedTheme.value= when (selectedTheme.value) {
+      "Default"-> if (isArabic) "افتراضي" else "Default"
+      "Dark"-> if (isArabic) "داكن" else "Dark"
+      else -> if (isArabic) "فاتح" else "Light"
+  }
     selectedWindSpeedUnit.value = if (selectedTempUnit.value == (if (isArabic) "فهرنهايت" else "Fahrenheit")) {
         if (isArabic) "ميل/ساعة" else "Mile/Hour"
     } else {
@@ -75,7 +80,11 @@ fun SettingScreen(onNavigateToMap:()->Unit){
         SettingItem(icon = R.drawable.wind_setting, description = stringResource(R.string.wind_speed_unit)
             , options = listOf(stringResource(R.string.meter_sec),
                 stringResource(R.string.mile_hour)),selectedWindSpeedUnit, action = null
-        )
+        ),
+        SettingItem(icon = R.drawable.wind_setting, description = stringResource(R.string.theme_mode), options = listOf(
+            stringResource(R.string.dark), stringResource(R.string.light),
+            stringResource(R.string.defaultt)
+        ),selectedTheme, action = { selectedTheme->viewModel.changeTheme(selectedTheme,context)})
     )
     Column (modifier = Modifier
         .fillMaxSize()
@@ -89,7 +98,7 @@ fun SettingScreen(onNavigateToMap:()->Unit){
 fun RadioButtonRow(options :List<String>,icon :Int,description:String, action: ((option:String)->Unit)?,savedOption:MutableState<String>) {
 Column (Modifier
     .padding(vertical = 16.dp, horizontal = 8.dp)
-    .background(MyColors.secondary.color, shape = RoundedCornerShape(16.dp))
+    .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(16.dp))
     .padding(vertical = 8.dp, horizontal = 8.dp)){
     Row{ Icon(painter = painterResource(icon), contentDescription = "",
         tint = Color.White
@@ -112,7 +121,7 @@ Column (Modifier
 
                         action(option)
                     }},
-                   colors = RadioButtonDefaults.colors(selectedColor = orange)
+                   colors = RadioButtonDefaults.colors(selectedColor = orange, unselectedColor = Color.White)
                 )
                 Text(
                     text = option,

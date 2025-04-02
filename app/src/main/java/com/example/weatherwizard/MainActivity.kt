@@ -16,6 +16,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -42,7 +44,9 @@ import com.example.weatherwizard.home.viewModel.HomeViewModel
 import com.example.weatherwizard.navigationUtills.MyNavHost
 import com.example.weatherwizard.navigationUtills.navBar
 import com.example.weatherwizard.ui.theme.DarkPrimary
+import com.example.weatherwizard.ui.theme.WeatherWizardTheme
 import com.example.weatherwizard.ui.theme.darkGradient
+import com.example.weatherwizard.ui.theme.lightGradient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
@@ -56,6 +60,10 @@ class MainActivity : ComponentActivity() {
     private lateinit var homeViewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPref= SharedPref.getInstance(this)
+
+
+
         homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(Repository.getInstance(
             RemoteDataSource(RetrofitHelper.retrofitInstance),
             LocalDataSource(AppDb.getInstance(this).getDao(),AppDb.getInstance(this).getAlertDao(),AppDb.getInstance(this).getHomeDao())
@@ -69,10 +77,16 @@ class MainActivity : ComponentActivity() {
 
 
         setContent {
+            val isDark= remember { mutableStateOf(
+                if(sharedPref.getTheme()=="Dark") true else false
+            ) }
+            val isDefault = remember { mutableStateOf(sharedPref.getTheme()=="Default") }
 //            homeViewModel.languageState = remember { mutableStateOf("en") }
             homeViewModel.locationState = remember { mutableStateOf(Location(LocationManager.GPS_PROVIDER)) }
 
-            MainScreen()
+  WeatherWizardTheme(darkTheme =if(isDefault.value) {isSystemInDarkTheme()} else {isDark.value}, dynamicColor = false) {
+      MainScreen(isDark=if(isDefault.value) {isSystemInDarkTheme()} else {isDark.value}) }
+
 
             //Log.i(TAG, "onCreate: ${locationState.value.latitude}")
 
@@ -98,10 +112,11 @@ class MainActivity : ComponentActivity() {
             resources.updateConfiguration(config, resources.displayMetrics)
         }
     }
+
     @OptIn(ExperimentalGlideComposeApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
-    fun MainScreen() {
+    fun MainScreen(isDark:Boolean) {
 
         val snackBarHostState = remember { SnackbarHostState() }
 //        val gradient = Brush.verticalGradient(colors =
@@ -111,7 +126,7 @@ class MainActivity : ComponentActivity() {
         val navController = rememberNavController()
         Box (modifier = Modifier
             .fillMaxSize()
-            .background(darkGradient)){
+            .background(if(isDark)  darkGradient else lightGradient)){
         Scaffold(
             containerColor = Color.Transparent,
             modifier = Modifier

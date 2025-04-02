@@ -26,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -38,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,10 +49,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.weatherwizard.MyColors
 import com.example.weatherwizard.MyWorker
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
+import com.example.weatherwizard.R
 import com.example.weatherwizard.Repository
 import com.example.weatherwizard.alert.model.AlertModel
 import com.example.weatherwizard.alert.viewModel.AlertViewModel
@@ -110,7 +112,7 @@ fun AlertScreen() {
             Icon(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = "Open Bottom Sheet",
-                tint = MyColors.primary.color
+                tint = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -132,7 +134,8 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
-    var selectedDate =remember { mutableStateOf("Alert Date") } // Store selected date
+    var selectedDate =remember { mutableStateOf(
+       "Alert date") } // Store selected date
    val verified = remember { mutableStateOf(true) }
     val datePickerDialog = DatePickerDialog(
         context,
@@ -150,7 +153,7 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
 
-    var selectedTime =remember { mutableStateOf("Alert Time") } // Store selected time
+    var selectedTime =remember { mutableStateOf("Alert time") } // Store selected time
 
     val timePickerDialog = TimePickerDialog(
         context,
@@ -162,29 +165,31 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
         true // 24-hour format
     )
     val sheetState = rememberModalBottomSheetState()
+
     ModalBottomSheet(
         onDismissRequest = { showBottomSheet.value = false },
         sheetState = sheetState
+        , containerColor = Color.White
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text("Date", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.date), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Button(onClick = { datePickerDialog.show() }, colors = ButtonDefaults.buttonColors(
                 Color.White
             ), modifier = Modifier.padding(vertical = 16.dp), shape = RoundedCornerShape(8.dp)) {
-                Text(selectedDate.value,color = DarkPrimary)
+                Text(selectedDate.value,color = MaterialTheme.colorScheme.primary)
             }
-            Text("Time", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.time), fontSize = 20.sp, fontWeight = FontWeight.Bold)
             Button(onClick = { timePickerDialog.show() }, colors = ButtonDefaults.buttonColors(
                 Color.White
             ), modifier = Modifier.padding(vertical = 16.dp), shape = RoundedCornerShape(8.dp)) {
-                Text(selectedTime.value,color = DarkPrimary)
+                Text(selectedTime.value,color =  MaterialTheme.colorScheme.primary)
             }
             if(verified.value == false){
-                Text("Incorrect time",color = Color.Red, fontSize = 12.sp)
+                Text(stringResource(R.string.incorrect_time),color = Color.Red, fontSize = 12.sp)
             }
             Spacer(modifier = Modifier.height(10.dp))
             Row (Modifier
@@ -206,18 +211,18 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
                     }
                           },
                 colors = ButtonDefaults.buttonColors(
-                    DarkPrimary
+                    MaterialTheme.colorScheme.primary
                 ), shape = RoundedCornerShape(8.dp)
             ) {
-                Text("Save",fontSize = 18.sp)
+                Text(stringResource(R.string.save),fontSize = 18.sp)
             }
                 Button(
                     onClick = { showBottomSheet.value = false },
                     colors = ButtonDefaults.buttonColors(
-                        DarkPrimary
+                        MaterialTheme.colorScheme.primary
                     ), shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Cancel",fontSize = 18.sp)
+                    Text(stringResource(R.string.cancel),fontSize = 18.sp)
                 }
             }
         }
@@ -229,7 +234,7 @@ fun AlertCard(alert : AlertModel,action :(AlertModel)->Unit){
     Row (Modifier
         .fillMaxWidth()
         .padding(8.dp)
-        .background(darkSecondary, shape = RoundedCornerShape(16.dp))
+        .background(MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(16.dp))
         .padding(vertical = 32.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween){
         Row(Modifier.padding(top = 8.dp)){
             Icon(
@@ -237,17 +242,17 @@ fun AlertCard(alert : AlertModel,action :(AlertModel)->Unit){
                 contentDescription = "Favorite",
                 tint = Color.White, modifier = Modifier.padding(top = 8.dp)
             )
-            Text(text = "Date : ${alert.date}", color = Color.White, fontSize = 18.sp,
+            Text(text = "${stringResource(R.string.date)} : ${alert.date}", color = Color.White, fontSize = 18.sp,
 
                 modifier = Modifier.padding(top=8.dp, start = 16.dp, end = 16.dp))
-            Text(text = "Time : ${alert.time}", color = Color.White, fontSize = 18.sp,
+            Text(text = "${stringResource(R.string.time)} : ${alert.time}", color = Color.White, fontSize = 18.sp,
 
                 modifier = Modifier.padding(top=8.dp))
         }
 
 
 
-Button(onClick = { action.invoke(alert) }, colors = ButtonDefaults.buttonColors(DarkPrimary), modifier = Modifier.padding(bottom = 8.dp, end = 8.dp)) {
+Button(onClick = { action.invoke(alert) }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary), modifier = Modifier.padding(bottom = 8.dp, end = 8.dp)) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Favorite",

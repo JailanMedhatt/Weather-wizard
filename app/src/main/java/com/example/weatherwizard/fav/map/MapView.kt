@@ -175,10 +175,11 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
                            }
                            else{
                                val sharedPref= SharedPref.getInstance(context)
-                                  viewModel.insertFavouriteLocation(favouriteLocation,sharedPref.getLanguage()?:"en",sharedPref.getTempUnit()?:"metric")}
+
+                               viewModel.insertFavouriteLocation(favouriteLocation,sharedPref.getLanguage()?:"en",sharedPref.getTempUnit()?:"metric")}
                                  }
                         ,
-                        colors = ButtonDefaults.buttonColors(DarkPrimary),
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {

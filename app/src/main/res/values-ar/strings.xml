@@ -32,5 +32,18 @@
     <string name="k">ك</string>
     <string name="hpa">هـ.ب</string>
     <string name="delete">حذف</string>
+    <string name="add_to_favourites">إضافة إلى المفضلة</string>
+    <string name="select">تحديد</string>
+    <string name="cancel">إلغاء</string>
+    <string name="incorrect_time">وقت غير صحيح</string>
+    <string name="time">الوقت</string>
+    <string name="date">التاريخ</string>
+    <string name="alert_time">وقت التنبيه</string>
+    <string name="alert_date">تاريخ التنبيه</string>
+    <string name="dark">داكن</string>
+    <string name="light">فاتح</string>
+    <string name="defaultt">افتراضي</string>
+    <string name="theme_mode">وضع السمة</string>
+
 
 </resources>

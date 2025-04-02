@@ -9,18 +9,18 @@ import java.util.Locale
 
 class SettingsViewModel {
     fun changeAppLanguage(language: String, context: Context) {
-//        val locale = Locale(if (language == "Arabic"||language=="العربية") "ar" else "en")
-//        Locale.setDefault(locale)
-//        val config = Configuration()
-//        config.setLocale(locale)
+
         val sharedPref= SharedPref.getInstance(context)
         sharedPref.setLanguage(if (language == "Arabic"||language=="العربية") "ar" else "en")
         Log.i("tag", "changeAppLanguage: ${sharedPref.getLanguage()}")
         val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
-        Runtime.getRuntime().exit(0)// Apply the language change
+        Runtime.getRuntime().exit(0)
     }
+
+
+
     fun changeTempUnit(unit: String, context: Context) {
         val sharedPref= SharedPref.getInstance(context)
         if(unit=="Celsius"||unit=="درجة مئوية"){
@@ -35,6 +35,8 @@ class SettingsViewModel {
             sharedPref.setTempUnit("standard")
             sharedPref.setWindSpeedUnit("Meter/Sec")
     }}
+
+
     fun changeLocationSelection(selectedLocation: String, context: Context,onNavigateToMap :()->Unit) {
         val sharedPref= SharedPref.getInstance(context)
         if(selectedLocation=="Map"||selectedLocation=="الخريطة"){
@@ -43,5 +45,18 @@ class SettingsViewModel {
         else{
             sharedPref.setGpsSelected(true)
         }
+    }
+    fun changeTheme(theme: String, context: Context) {
+        val selectedTheme = when (theme) {
+            "Dark","داكن" -> "Dark"
+            "Light","فاتح" -> "Light"
+            else -> "Default"
+        }
+        val sharedPref= SharedPref.getInstance(context)
+        sharedPref.setTheme(selectedTheme)
+        val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
+        intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intent)
+        Runtime.getRuntime().exit(0)
     }
 }
