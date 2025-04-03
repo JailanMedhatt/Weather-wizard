@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherwizard.Repository
 import com.example.weatherwizard.alert.model.AlertModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -14,6 +17,8 @@ import java.util.Locale
 class AlertViewModel(val repository: Repository): ViewModel() {
     private var mutableAlerts = MutableStateFlow<List<AlertModel>>(emptyList())
     val alerts = mutableAlerts.asStateFlow()
+    private val mutableMessage = MutableStateFlow<String?>(null) // Holds last message
+    val message = mutableMessage.asStateFlow()
 
     class AlertViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory
     {
@@ -22,19 +27,21 @@ class AlertViewModel(val repository: Repository): ViewModel() {
         }
     }
     fun insertAlert(alarm: AlertModel) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.insertAlert(alarm)
+            mutableMessage.value=("Alarm added successfully")
 
         }
 
 
     }
     fun getAlerts(){
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             repository.getAlerts().collect{
                 it.forEachIndexed { index, alertModel ->
                 if(calculateDelay(alertModel.date,alertModel.time)<=0){
                     repository.deleteAlert(alertModel)
+                    mutableMessage.value=("Alarm deleted successfully")
 
                 } }
                 mutableAlerts.value=it
@@ -54,9 +61,12 @@ class AlertViewModel(val repository: Repository): ViewModel() {
         }
     }
     fun  deleteAlert(alarm: AlertModel){
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.deleteAlert(alarm)
+            mutableMessage.emit("Alarm deleted successfully")
         viewModelScope.launch {
             repository.deleteAlert(alarm)
         }
 
     }
-}
+}}

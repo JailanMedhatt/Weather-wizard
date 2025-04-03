@@ -96,7 +96,10 @@ class MainActivity : ComponentActivity() {
 
     fun applySavedLanguage(context: Context) {
         val sharedPreferences = SharedPref.getInstance(context)
-        val language = sharedPreferences.getLanguage() ?: "en"
+        var language = sharedPreferences.getLanguage() ?: "en"
+        if(language=="Default"){
+            language=Locale.getDefault().language
+        }
         Log.i("tag", "applySavedLanguage:$language ")
        // homeViewModel.languageState.value= language
         homeViewModel.setLanguage(language)

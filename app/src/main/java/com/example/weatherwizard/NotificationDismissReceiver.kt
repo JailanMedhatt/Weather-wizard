@@ -17,20 +17,6 @@ class NotificationDismissReceiver : BroadcastReceiver() {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 class NotificationNavigateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         MyWorker.mediaPlayer?.stop()

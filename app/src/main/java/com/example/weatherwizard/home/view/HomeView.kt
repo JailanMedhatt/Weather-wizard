@@ -287,7 +287,7 @@ fun MyUi(
 
 
     Column (modifier = Modifier.fillMaxWidth(), horizontalAlignment =  Alignment.CenterHorizontally) {
-        Image(painter = painterResource( R.drawable.cloudy_sunny), contentDescription = "",Modifier.size(150.dp))
+        Image(painter = painterResource( getWeatherIcon(currentWeather.weather?.get(0)?.main!!)), contentDescription = "",Modifier.size(150.dp))
         Row(Modifier.padding(top = 16.dp)) {
             Text(
                 text = if(language=="ar") viewModel.convertToArabicNumbers(  currentWeather.main?.temp.toString()) else currentWeather.main?.temp.toString(),
@@ -350,5 +350,17 @@ fun MyUi(
 
             DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = if(language=="ar") viewModel.convertToArabicNumbers( currentObj.main?.temp.toString()) else currentObj.main?.temp.toString(),unit)
         }
+    }
+}
+fun getWeatherIcon(weatherMain: String): Int {
+    return when (weatherMain) {
+        "Clouds" -> R.drawable.cloudy_sunny
+        "Clear" -> R.drawable.sunny_weather
+        "Rain" -> R.drawable.rain_weather
+        "Snow" -> R.drawable.snow_weather
+        "Thunderstorm" -> R.drawable.thunder_weather
+        "Drizzle" -> R.drawable.rain_weather
+        "Atmosphere" -> R.drawable.atmosphere_weather
+        else -> R.drawable.cloudy_weather
     }
 }

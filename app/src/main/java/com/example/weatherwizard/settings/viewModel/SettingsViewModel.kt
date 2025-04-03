@@ -11,7 +11,9 @@ class SettingsViewModel {
     fun changeAppLanguage(language: String, context: Context) {
 
         val sharedPref= SharedPref.getInstance(context)
-        sharedPref.setLanguage(if (language == "Arabic"||language=="العربية") "ar" else "en")
+        sharedPref.setLanguage(if (language == "Arabic"||language=="العربية") "ar"
+        else if(language=="English"||language=="الإنجليزية") "en"
+        else "Default")
         Log.i("tag", "changeAppLanguage: ${sharedPref.getLanguage()}")
         val intent = context.packageManager.getLaunchIntentForPackage(context.packageName)
         intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

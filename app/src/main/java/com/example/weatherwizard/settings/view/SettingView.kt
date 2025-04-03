@@ -1,4 +1,5 @@
 package com.example.weatherwizard.settings.view
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,8 @@ import com.example.weatherwizard.R
 import com.example.weatherwizard.SharedPref
 import com.example.weatherwizard.settings.viewModel.SettingsViewModel
 import com.example.weatherwizard.ui.theme.orange
+import java.util.Locale
+
 @Composable
 fun SettingScreen(onNavigateToMap:()->Unit){
     val viewModel= SettingsViewModel()
@@ -37,13 +40,27 @@ fun SettingScreen(onNavigateToMap:()->Unit){
     val sharedPref= SharedPref.getInstance(context)
 
         val selectedLanguage = remember { mutableStateOf(sharedPref.getLanguage()?:"en") }
+    Log.i("TAG", "SettingScreen1: ${selectedLanguage.value}")
         val selectedTempUnit = remember {  mutableStateOf( sharedPref.getTempUnit()?:"metric")}
         val selectedWindSpeedUnit = remember { mutableStateOf(sharedPref.getWindSpeedUnit()?:"Meter/Sec") }
        val selectedTheme = remember { mutableStateOf(sharedPref.getTheme()?:"Dark") }
         val  isGpsSelcted = remember { mutableStateOf(sharedPref.getGpsSelected()) }
     val selectedLocation = remember { mutableStateOf("Gps") }
-    val isArabic = selectedLanguage.value == "ar" || selectedLanguage.value == "العربية"
-    selectedLanguage.value = if (isArabic) "العربية" else "English"
+    var isArabic = selectedLanguage.value == "ar" || selectedLanguage.value == "العربية"
+    if (selectedLanguage.value=="Default"||selectedLanguage.value=="افتراضي"){
+        isArabic=(Locale.getDefault().language=="ar")
+    }
+    else{
+        isArabic = selectedLanguage.value == "ar" || selectedLanguage.value == "العربية"||selectedLanguage.value=="Arabic"
+    }
+    selectedLanguage.value = if (selectedLanguage.value=="ar"||selectedLanguage.value=="العربية") "العربية" else if (selectedLanguage.value=="en"|| selectedLanguage.value=="English")"English"
+    else if ((selectedLanguage.value=="Default"||selectedLanguage.value=="افتراضي")&& isArabic) "افتراضي"
+    else if (selectedLanguage.value=="Default"&& !isArabic) "Default"
+    else "English"
+    Log.i("TAG", "SettingScreen2: ${selectedLanguage.value} ${Locale.getDefault().language}")
+
+
+   // selectedLanguage.value = if (isArabic) "العربية" else "English"
     selectedTempUnit.value = when (selectedTempUnit.value) {
         "metric", "Celsius", "درجة مئوية" -> if (isArabic) "درجة مئوية" else "Celsius"
         "imperial", "Fahrenheit", "فهرنهايت" -> if (isArabic) "فهرنهايت" else "Fahrenheit"
@@ -65,7 +82,9 @@ fun SettingScreen(onNavigateToMap:()->Unit){
     }
 
     val settingItems = listOf(SettingItem(icon = R.drawable.language, description = stringResource(R.string.language)
-        , options = listOf(stringResource(R.string.english), stringResource(R.string.arabic)),selectedLanguage
+        , options = listOf(stringResource(R.string.english), stringResource(R.string.arabic),
+            stringResource(R.string.defaultt)
+        ),selectedLanguage
    ,action ={selectedOption-> viewModel.changeAppLanguage(selectedOption,context) } ),
         SettingItem(
         icon = R.drawable.temp, description = stringResource(R.string.temp_unit),
