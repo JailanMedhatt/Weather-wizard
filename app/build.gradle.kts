@@ -143,5 +143,8 @@ dependencies {
 
     //Turbine Testing For Flow
     testImplementation ("app.cash.turbine:turbine:0.12.1")
+    dependencies {
+        implementation("com.airbnb.android:lottie-compose:6.3.0") // Use the latest version
+    }
 
 }

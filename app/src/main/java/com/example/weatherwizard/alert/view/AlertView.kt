@@ -58,6 +58,7 @@ import com.example.weatherwizard.alert.model.AlertModel
 import com.example.weatherwizard.alert.viewModel.AlertViewModel
 import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
+import com.example.weatherwizard.fav.view.LottieWithControls
 import com.example.weatherwizard.ui.theme.DarkPrimary
 import com.example.weatherwizard.ui.theme.darkSecondary
 import java.util.Calendar
@@ -90,15 +91,17 @@ fun AlertScreen() {
         viewModel.getAlerts()
     }
     val alerts = viewModel.alerts.collectAsStateWithLifecycle()
-    alerts.value.forEach {
-        println(it.date)
-        println(it.time)
-    }
+
+
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
+            if (!alerts.value.isNullOrEmpty()){
             alerts.value.forEach {
                 AlertCard(it, action = {viewModel.deleteAlert(it)})
+            }}
+            else{
+                LottieWithControls()
             }
         }
 

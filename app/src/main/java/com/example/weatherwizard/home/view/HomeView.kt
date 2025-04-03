@@ -262,7 +262,7 @@ fun MyUi(
                 )
                 Text(
 
-                    text = if(language=="ar") viewModel.convertToArabicNumbers(currentWeather.main?.feels_like.toString()) else "${currentWeather.main?.feels_like}",
+                    text = if(language=="ar") viewModel.convertToArabicNumbers(currentWeather.main?.feels_like?.toInt().toString()) else "${currentWeather.main?.feels_like?.toInt()}",
                     style = MaterialTheme.typography.headlineSmall, color = Color.White
                     , fontSize = 16.sp
                 )
@@ -290,7 +290,7 @@ fun MyUi(
         Image(painter = painterResource( getWeatherIcon(currentWeather.weather?.get(0)?.main!!)), contentDescription = "",Modifier.size(150.dp))
         Row(Modifier.padding(top = 16.dp)) {
             Text(
-                text = if(language=="ar") viewModel.convertToArabicNumbers(  currentWeather.main?.temp.toString()) else currentWeather.main?.temp.toString(),
+                text = if(language=="ar") viewModel.convertToArabicNumbers(  currentWeather.main?.temp?.toInt().toString()) else currentWeather.main?.temp?.toInt().toString(),
                 style = MaterialTheme.typography.headlineLarge, color = Color.White
                 , fontSize = 43.sp
             )
@@ -332,7 +332,7 @@ fun MyUi(
         items(hoursList.size){
                 currentIndex->
             val obj= hoursList.get(currentIndex)
-            HourCard(date = obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = if(language=="ar") viewModel.convertToArabicNumbers(obj.main?.temp.toString()) else obj.main?.temp.toString(),unit)
+            HourCard(date = if (language=="ar")viewModel.convertToArabicNumbers(obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00")) else obj.dt_txt!!.substringAfter(" ").substringBeforeLast(":00"), icon = obj.weather?.get(0)!!.icon, temp = if(language=="ar") viewModel.convertToArabicNumbers(obj.main?.temp?.toInt().toString()) else obj.main?.temp?.toInt().toString(),unit)
         }
     }
 
@@ -348,7 +348,7 @@ fun MyUi(
         daysList.forEach {
                 currentObj->
 
-            DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = if(language=="ar") viewModel.convertToArabicNumbers( currentObj.main?.temp.toString()) else currentObj.main?.temp.toString(),unit)
+            DayCard(date = currentObj.dt_txt!!.substringBefore(" "), icon = currentObj.weather?.get(0)!!.icon, temp = if(language=="ar") viewModel.convertToArabicNumbers( currentObj.main?.temp?.toInt().toString()) else currentObj.main?.temp?.toInt().toString(),unit)
         }
     }
 }

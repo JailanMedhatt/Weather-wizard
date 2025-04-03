@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -24,6 +25,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +36,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.LottieConstants
+import com.airbnb.lottie.compose.animateLottieCompositionAsState
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
 import com.example.weatherwizard.Pojos.FavWeatherDetails
@@ -74,12 +81,19 @@ LaunchedEffect (Unit){
     val locations = viewModel.locations.collectAsStateWithLifecycle()
     Box(Modifier.fillMaxSize()){
     Column (Modifier.fillMaxSize()) {
+        if (!locations.value.isEmpty()){
         locations.value.forEachIndexed { index, favoriteLocation ->
             LocationCard(action = {
                 viewModel.deleteFavouriteLocation(favoriteLocation)
             }, location = favoriteLocation,onNavigateToHome)
         }
     }
+    else{
+        LottieWithControls()
+
+    }}
+
+
         FloatingActionButton(onClick = { onNavigateToMap() }
         , modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -98,7 +112,7 @@ fun LocationCard(action :(FavoriteLocation)->Unit,location: FavWeatherDetails,on
         .background(darkSecondary, shape = RoundedCornerShape(16.dp))
         .padding(vertical = 32.dp, horizontal = 8.dp), horizontalArrangement = Arrangement.SpaceBetween){
         Text(text = location.favoriteLocation.address, color = Color.White, fontSize = 22.sp,
-            modifier = Modifier.padding(top=8.dp))
+            modifier = Modifier.padding(top=8.dp, start = 8.dp))
         Row{
         Button(onClick = {  action.invoke(location.favoriteLocation)},
             colors = ButtonDefaults.buttonColors(
@@ -126,7 +140,7 @@ fun LocationCardPreview(){
         .background( MaterialTheme.colorScheme.secondary, shape = RoundedCornerShape(16.dp))
         .padding(32.dp), horizontalArrangement = Arrangement.SpaceBetween){
          Text(text = "Place", color = Color.White, fontSize = 22.sp,
-             modifier = Modifier.padding(top=8.dp))
+             modifier = Modifier.padding(top=8.dp, start = 16.dp))
         Button(onClick = {}, colors = ButtonDefaults.buttonColors(
             containerColor =  MaterialTheme.colorScheme.primary
             ), ) {
@@ -134,4 +148,20 @@ fun LocationCardPreview(){
         }
     }
 
+}
+@Composable
+fun LottieWithControls() {
+    val composition = rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.lottie))
+    val progress by animateLottieCompositionAsState(
+        composition = composition.value,
+        iterations = LottieConstants.IterateForever,
+        isPlaying = true // Change this to control play/pause
+    )
+
+    LottieAnimation(
+        composition = composition.value,
+        progress = progress,
+        Modifier.padding(horizontal = 128.dp, vertical = 256.dp).size(250.dp)
+
+    )
 }
