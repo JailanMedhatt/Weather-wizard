@@ -1,4 +1,4 @@
-package com.example.weatherwizard
+package com.example.weatherwizard.data
 
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Pojos.CurrentWeatherResponse
@@ -47,9 +47,9 @@ class Repository private constructor(val remoteDataSource: RemoteDataSource,val 
         @Volatile
         private var instance : Repository?=null
         fun getInstance(remoteDataSource: RemoteDataSource,localDataSource: LocalDataSource): Repository {
-            return instance?: synchronized(this){
-                val Instance=Repository(remoteDataSource,localDataSource)
-                instance=Instance
+            return instance ?: synchronized(this){
+                val Instance= Repository(remoteDataSource,localDataSource)
+                instance =Instance
                 Instance
             }
         }

@@ -30,14 +30,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.example.weatherwizard.Pojos.CurrentWeatherResponse
 import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.R
 import com.example.weatherwizard.Response
-import com.example.weatherwizard.SharedPref
+import com.example.weatherwizard.data.SharedPref
 import com.example.weatherwizard.home.viewModel.HomeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
@@ -355,7 +354,7 @@ fun MyUi(
 fun getWeatherIcon(weatherMain: String): Int {
     return when (weatherMain) {
         "Clouds" -> R.drawable.cloudy_sunny
-        "Clear" -> R.drawable.sunny_weather
+        "Clear" -> R.drawable.clear_sunny
         "Rain" -> R.drawable.rain_weather
         "Snow" -> R.drawable.snow_weather
         "Thunderstorm" -> R.drawable.thunder_weather

@@ -1,4 +1,4 @@
-package com.example.weatherwizard
+package com.example.weatherwizard.data
 
 import android.content.Context
 import android.content.SharedPreferences

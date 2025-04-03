@@ -2,10 +2,8 @@ package com.example.weatherwizard.settings.viewModel
 
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.util.Log
-import com.example.weatherwizard.SharedPref
-import java.util.Locale
+import com.example.weatherwizard.data.SharedPref
 
 class SettingsViewModel {
     fun changeAppLanguage(language: String, context: Context) {

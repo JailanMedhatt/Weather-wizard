@@ -32,13 +32,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
 import com.example.weatherwizard.R
-import com.example.weatherwizard.Repository
-import com.example.weatherwizard.SharedPref
+import com.example.weatherwizard.data.Repository
+import com.example.weatherwizard.data.SharedPref
 import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.getAddressFromLocation
-import com.example.weatherwizard.ui.theme.DarkPrimary
 import com.example.weatherwizard.ui.theme.WeatherWizardTheme
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition

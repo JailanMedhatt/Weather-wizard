@@ -53,14 +53,12 @@ import com.example.weatherwizard.MyWorker
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
 import com.example.weatherwizard.R
-import com.example.weatherwizard.Repository
+import com.example.weatherwizard.data.Repository
 import com.example.weatherwizard.alert.model.AlertModel
 import com.example.weatherwizard.alert.viewModel.AlertViewModel
 import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.fav.view.LottieWithControls
-import com.example.weatherwizard.ui.theme.DarkPrimary
-import com.example.weatherwizard.ui.theme.darkSecondary
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
@@ -142,6 +140,7 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
    val verified = remember { mutableStateOf(true) }
     val datePickerDialog = DatePickerDialog(
         context,
+        R.style.CustomDatePickerDialog, // Apply your custom style
         { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
             selectedDate.value = "$selectedDay/${selectedMonth + 1}/$selectedYear" // Format selected date
         },
@@ -160,12 +159,13 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
 
     val timePickerDialog = TimePickerDialog(
         context,
+        R.style.CustomTimePickerDialog,
         { _: TimePicker, selectedHour: Int, selectedMinute: Int ->
             selectedTime.value = String.format("%02d:%02d", selectedHour, selectedMinute) // Format time as HH:mm
         },
         hour,
         minute,
-        true // 24-hour format
+        true
     )
     val sheetState = rememberModalBottomSheetState()
 
@@ -217,7 +217,7 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
                     MaterialTheme.colorScheme.primary
                 ), shape = RoundedCornerShape(8.dp)
             ) {
-                Text(stringResource(R.string.save),fontSize = 18.sp)
+                Text(stringResource(R.string.save),fontSize = 18.sp,color = Color.White)
             }
                 Button(
                     onClick = { showBottomSheet.value = false },
@@ -225,7 +225,7 @@ fun BottomSheetContent(showBottomSheet: MutableState<Boolean>,viewModel: AlertVi
                         MaterialTheme.colorScheme.primary
                     ), shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text(stringResource(R.string.cancel),fontSize = 18.sp)
+                    Text(stringResource(R.string.cancel),fontSize = 18.sp,color = Color.White)
                 }
             }
         }

@@ -1,18 +1,13 @@
 package com.example.weatherwizard
-
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.alert.model.AlertModel
+import com.example.weatherwizard.data.Repository
 import com.example.weatherwizard.data.database.LocalDataSource
-import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
-
 
 class RepositoryTest {
 

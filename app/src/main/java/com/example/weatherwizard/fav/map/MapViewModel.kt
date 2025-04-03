@@ -7,8 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherwizard.Pojos.FavWeatherDetails
-import com.example.weatherwizard.Repository
-import com.example.weatherwizard.SharedPref
+import com.example.weatherwizard.data.Repository
+import com.example.weatherwizard.data.SharedPref
 import com.example.weatherwizard.data.model.FavoriteLocation
 
 import com.google.android.gms.maps.model.LatLng
@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-import org.intellij.lang.annotations.Language
 
 class MapScreenViewModel(private val placesClient: PlacesClient,private val repository: Repository): ViewModel() {
 

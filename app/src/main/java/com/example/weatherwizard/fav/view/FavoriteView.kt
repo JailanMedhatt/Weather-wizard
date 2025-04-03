@@ -45,7 +45,7 @@ import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
 import com.example.weatherwizard.Pojos.FavWeatherDetails
 import com.example.weatherwizard.R
-import com.example.weatherwizard.Repository
+import com.example.weatherwizard.data.Repository
 import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.data.model.FavoriteLocation

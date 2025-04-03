@@ -26,11 +26,9 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
@@ -38,6 +36,8 @@ import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.example.weatherwizard.Network.RemoteDataSource
 import com.example.weatherwizard.Network.RetrofitHelper
+import com.example.weatherwizard.data.Repository
+import com.example.weatherwizard.data.SharedPref
 import com.example.weatherwizard.data.database.AppDb
 import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.home.viewModel.HomeViewModel
@@ -64,7 +64,8 @@ class MainActivity : ComponentActivity() {
 
 
 
-        homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(Repository.getInstance(
+        homeViewModel= ViewModelProvider(this, HomeViewModel.MyFactory(
+            Repository.getInstance(
             RemoteDataSource(RetrofitHelper.retrofitInstance),
             LocalDataSource(AppDb.getInstance(this).getDao(),AppDb.getInstance(this).getAlertDao(),AppDb.getInstance(this).getHomeDao())
         ))).

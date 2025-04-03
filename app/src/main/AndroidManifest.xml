@@ -16,7 +16,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WeatherWizard"
-        android:name=".MyApplication"
         tools:targetApi="31">
         <receiver android:name=".NotificationDismissReceiver" />
         <receiver android:name=".NotificationNavigateReceiver" />

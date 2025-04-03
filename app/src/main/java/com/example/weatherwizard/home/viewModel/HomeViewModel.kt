@@ -9,12 +9,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.weatherwizard.Pojos.CurrentWeatherResponse
 import com.example.weatherwizard.Pojos.FavWeatherDetails
-import com.example.weatherwizard.Repository
+import com.example.weatherwizard.data.Repository
 import com.example.weatherwizard.Response
 import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.home.model.DetailsModel
 import com.google.android.gms.location.FusedLocationProviderClient
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,7 +29,7 @@ import java.util.Date
 import java.util.Locale
 
 
-class HomeViewModel(private val repo :Repository):ViewModel() {
+class HomeViewModel(private val repo : Repository):ViewModel() {
      lateinit var fusedLocationProviderClient: FusedLocationProviderClient
      lateinit var locationState: MutableState<Location>
      private   var _languageState: MutableStateFlow<String> = MutableStateFlow("en")

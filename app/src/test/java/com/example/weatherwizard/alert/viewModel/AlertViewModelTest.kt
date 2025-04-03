@@ -1,8 +1,7 @@
 package com.example.weatherwizard.alert.viewModel
 
-import android.content.Context
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.weatherwizard.Repository
+import com.example.weatherwizard.data.Repository
 import com.example.weatherwizard.alert.model.AlertModel
 
 import io.mockk.coEvery
@@ -17,7 +16,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.hamcrest.CoreMatchers.`is`
 

@@ -19,5 +19,7 @@ sealed class ScreenRoute(){
     object SettingsRoute : ScreenRoute()
     @Serializable
     data class MapRoute (val fromSettings:Boolean): ScreenRoute()
+    @Serializable
+    object SplashRoute:ScreenRoute()
 
 }
