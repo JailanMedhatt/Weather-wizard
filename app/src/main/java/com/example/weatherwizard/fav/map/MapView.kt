@@ -39,6 +39,7 @@ import com.example.weatherwizard.data.database.LocalDataSource
 import com.example.weatherwizard.data.model.FavoriteLocation
 import com.example.weatherwizard.getAddressFromLocation
 import com.example.weatherwizard.ui.theme.DarkPrimary
+import com.example.weatherwizard.ui.theme.WeatherWizardTheme
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -60,7 +61,7 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
     val context = LocalContext.current
 
     // Initialize Places API (outside ViewModel)
-    Places.initializeWithNewPlacesApiEnabled(context, "AIzaSyCaj10hgcwGaosoYRyv79ppLviFJ9eMNmM")
+    Places.initializeWithNewPlacesApiEnabled(context, "AIzaSyCrz8arZ9O88eZgIHCNnHv-fBTv93nlggg")
     val placesClient: PlacesClient = Places.createClient(context)
 
     // Create ViewModel with custom factory
@@ -120,7 +121,7 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
                 snippet = "Marker at selected location"
             )
         }
-
+   WeatherWizardTheme(false) {
         PlacesAutocompleteTextField(
 
             modifier = Modifier
@@ -128,12 +129,14 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
                 .padding(16.dp)
                 .background(Color.White, shape = RoundedCornerShape(12.dp)),
             searchText = searchText,
+
             textFieldMaxLines = 1,
             predictions = predictions.map {
                 AutocompletePlace(
                     placeId = it.placeId,
                     primaryText = it.getPrimaryText(null),
-                    secondaryText = it.getSecondaryText(null)
+                    secondaryText = it.getSecondaryText(null),
+
                 )
             },
             onQueryChanged = { viewModel.onSearchQueryChanged(it) },
@@ -142,7 +145,8 @@ fun MapScreen(snackbarHostState: SnackbarHostState, fromSettings: Boolean,popBac
             },
             selectedPlace = null
 
-        )
+
+        )}
 
 
         selectedLocation?.let { location ->
